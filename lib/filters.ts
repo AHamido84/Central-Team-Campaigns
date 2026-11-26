@@ -1,6 +1,6 @@
 import { addDays, diffDays, monthStart, todayISO } from "./dates";
 
-export const PRESETS = ["today", "last_7", "last_30", "this_month", "custom"] as const;
+export const PRESETS = ["today", "last_7", "last_30", "this_month", "last_month", "custom"] as const;
 export type Preset = (typeof PRESETS)[number];
 
 export interface Filters {
@@ -34,6 +34,10 @@ export function parseFilters(sp: SearchParams, today = todayISO()): Filters {
     case "this_month":
       from = monthStart(today);
       to = today;
+      break;
+    case "last_month":
+      to = addDays(monthStart(today), -1);
+      from = monthStart(to);
       break;
     case "custom":
       from = iso(one(sp.from)) || addDays(today, -30);

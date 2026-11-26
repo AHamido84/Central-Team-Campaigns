@@ -80,3 +80,46 @@
   --series-5: #e24d8b; --series-6: #0aac23; --series-7: #9887ef; --series-8: #eb6263;
   --chart-grid: #243044; --chart-axis: #8b96aa;
 }
+
+/* ---------- Print (reports) ---------- */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm 10mm 16mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .report-section,
+  .break-inside-avoid {
+    break-inside: avoid;
+  }
+  .recharts-tooltip-wrapper {
+    display: none !important;
+  }
+  /* A4 is ~720px wide: tighten metric tables so every column fits on the page. */
+  .report-table {
+    font-size: 8.5px;
+    table-layout: auto;
+  }
+  .report-table th,
+  .report-table td {
+    padding: 4px 3px !important;
+  }
+  .report-table th {
+    white-space: normal !important;
+    line-height: 1.2;
+  }
+  .report-table .report-name {
+    width: 26%;
+  }
+  .report-table tr {
+    break-inside: avoid;
+  }
+}
+.report-print .report-doc {
+  background: #fff;
+}

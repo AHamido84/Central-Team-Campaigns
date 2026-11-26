@@ -14,7 +14,11 @@ import { COMPANY_TABS, CompanyTabs, TAB_PERMISSION, type CompanyTab } from "@/co
 import { CampaignsTable } from "@/components/campaigns/campaigns-table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { EmptyState } from "@/components/ui/empty-state";
+import Link from "next/link";
+import { ExportBar } from "@/components/reports/export-bar";
+import { ReportDocument } from "@/components/reports/report-document";
+import { buildReport } from "@/lib/data/reports";
+import { parseReportParams, reportQuery } from "@/lib/reports/params";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { can, hasPermission } from "@/lib/auth/permissions";
 import { requirePage } from "@/lib/auth/session";
@@ -73,9 +77,20 @@ export default async function CompanyPage({ params, searchParams }: { params: Pr
   } else if (tab === "budgets") {
     body = <BudgetsSection user={user} sp={sp} fixedCompanyId={id} />;
   } else {
-    const soon = { reports: [FileBarChart, 8] } as const;
-    const [Icon, phase] = soon[tab];
-    body = <EmptyState icon={Icon} title={t("soon.title", { section: t(`companies.tabs.${tab}`) })} body={t("soon.body", { phase: t("common.phase", { n: phase }) })} />;
+    // Media buyers get their own campaigns in this company; everyone else gets the company report.
+    const own = user.role === "MediaBuyer";
+    const rp = { ...parseReportParams(sp), type: own ? ("buyer" as const) : ("company" as const), company: id, buyer: own ? user.email : "" };
+    const report = await buildReport(user, rp, locale);
+    const query = reportQuery(rp);
+    body = (
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Button asChild variant="outline" size="sm"><Link href={`/reports?${query}`}><FileBarChart />{t("reports.openBuilder")}</Link></Button>
+          <ExportBar query={query} canShare={hasPermission(user, "report:share")} />
+        </div>
+        <div className="rounded-2xl border bg-background p-3 shadow-soft sm:p-5"><ReportDocument r={report} /></div>
+      </div>
+    );
   }
 
   return (

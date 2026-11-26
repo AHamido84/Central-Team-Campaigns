@@ -152,7 +152,10 @@
     "badFile": "Couldn't read the file",
     "emptyFile": "The file is empty or has no header row",
     "unsupportedFile": "Unsupported format. Use CSV or XLSX",
-    "notApproved": "A creative must be approved before it can go live or be paused."
+    "notApproved": "A creative must be approved before it can go live or be paused.",
+    "unauthorized": "Please sign in first",
+    "chromeNotFound": "The PDF browser could not start on the server. Check the Chromium setup.",
+    "pdfFailed": "The PDF could not be created. Please try again."
   },
   "status": {
     "active": "Active",
@@ -497,7 +500,8 @@
       "last_7": "Last 7 days",
       "last_30": "Last 30 days",
       "this_month": "This month",
-      "custom": "Custom range"
+      "custom": "Custom range",
+      "last_month": "Last month"
     }
   },
   "kpi": {
@@ -579,7 +583,8 @@
       "Schedule": "the schedule",
       "Budget": "the budget",
       "Target": "the target",
-      "CreativeVersion": "a new version of the creative"
+      "CreativeVersion": "a new version of the creative",
+      "ShareLink": "share link"
     }
   },
   "creatives": {
@@ -780,5 +785,66 @@
     "cumulative": "Cumulative spend",
     "planLine": "Plan (even pace)",
     "empty": "No companies to show"
+  },
+  "reports": {
+    "intro": "Pick a report type, period and sections, then export to PDF or Excel or share a view-only link.",
+    "type": {
+      "company": "Company report",
+      "consolidated": "Consolidated report",
+      "buyer": "Media buyer report"
+    },
+    "reportType": "Report type",
+    "allCompanies": "All companies",
+    "preset": {
+      "weekly": "Weekly",
+      "monthly": "Last month",
+      "mtd": "Month to date"
+    },
+    "sectionsLabel": "Sections",
+    "sections": {
+      "kpis": "Summary and KPIs",
+      "daily": "Daily performance",
+      "platforms": "By platform",
+      "companies": "By company",
+      "campaigns": "Campaigns",
+      "creatives": "Top creatives",
+      "budget": "Budget vs plan {month}",
+      "alerts": "Alerts"
+    },
+    "summary": "We spent {spend} for {results} results, with a link CTR of {ctr} and a cost per result of {cpr} on conversion campaigns.",
+    "generated": "Generated",
+    "confidential": "Confidential, internal use",
+    "period": "Period",
+    "currency": "Currency",
+    "print": "Print",
+    "pdf": "Download PDF",
+    "preparingPdf": "Preparing PDF…",
+    "share": "Share link",
+    "shareHint": "Anyone with the link sees only this report, read only, until it expires or you revoke it.",
+    "validFor": "Valid for",
+    "days": "{n, plural, one {# day} other {# days}}",
+    "fixedDates": "Fix the dates (the period does not roll forward)",
+    "createLink": "Create link",
+    "linkCreated": "Link created",
+    "copy": "Copy",
+    "activeLinks": "Active share links",
+    "noLinks": "No active links.",
+    "revoke": "Revoke",
+    "revoked": "Link revoked",
+    "expires": "Expires",
+    "sharedBy": "Shared by {name}",
+    "linkInvalid": "This link is not valid",
+    "linkInvalidBody": "The link has expired or was revoked. Ask for a new one.",
+    "linkNoAccess": "The person who shared this link no longer has access to this report.",
+    "xlsx": {
+      "summary": "Summary",
+      "metric": "Metric",
+      "value": "Value",
+      "previous": "Previous period",
+      "change": "Change",
+      "daily": "Daily",
+      "date": "Date"
+    },
+    "openBuilder": "Open in report builder"
   }
 }
