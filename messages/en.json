@@ -1,0 +1,62 @@
+{
+  "app": { "name": "Qaswarah Ads Hub", "short": "Ads Hub", "org": "Qaswarah Holding", "team": "Central Team" },
+  "nav": {
+    "dashboard": "Dashboard",
+    "companies": "Companies",
+    "campaigns": "Campaigns",
+    "import": "Import results",
+    "creatives": "Creatives",
+    "schedule": "Schedule",
+    "budgets": "Budgets & targets",
+    "reports": "Reports",
+    "settings": "Settings",
+    "groupWork": "Daily work",
+    "groupInsights": "Insights",
+    "groupAdmin": "Admin",
+    "openMenu": "Open menu"
+  },
+  "common": {
+    "signOut": "Sign out",
+    "language": "العربية",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "comingSoon": "Coming soon",
+    "phase": "Phase {n}",
+    "back": "Back",
+    "home": "Home"
+  },
+  "roles": { "Admin": "Admin", "Manager": "Manager", "MediaBuyer": "Media buyer", "Designer": "Designer", "Viewer": "Viewer" },
+  "login": {
+    "title": "Sign in",
+    "subtitle": "The Central Team's hub for tracking ad campaigns across Qaswarah companies",
+    "google": "Continue with Google",
+    "devTitle": "Dev sign in (development only)",
+    "devHint": "Use an email from the Users tab or ADMIN_EMAILS",
+    "email": "Email",
+    "continue": "Continue",
+    "noProvider": "Sign in is not configured yet. Add AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET.",
+    "denied": "This email is not allowed. Ask an admin to add you.",
+    "error": "Sign in failed. Please try again."
+  },
+  "forbidden": { "title": "You don't have access to this page", "body": "Your current role doesn't allow this page. Ask an admin to change your role if you need it." },
+  "dashboard": {
+    "welcome": "Welcome, {name}",
+    "intro": "This is the starter dashboard. KPIs, charts and alerts arrive in Phase 4.",
+    "status": "System status",
+    "backend": "Data source",
+    "backendGoogle": "Google Sheets",
+    "backendMemory": "Local test file",
+    "tabs": "Tabs ready",
+    "tabsMissing": "Missing tabs: run npm run init-sheets",
+    "role": "Your role",
+    "companies": "Allowed companies",
+    "allCompanies": "All companies",
+    "error": "Could not reach the data source"
+  },
+  "soon": {
+    "title": "{section} is being built",
+    "body": "This page will be ready in {phase}."
+  }
+}

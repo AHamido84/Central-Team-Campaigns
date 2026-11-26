@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Qaswarah placeholder logo">
+  <!-- PLACEHOLDER: replace this file with the real Qaswarah logo (same path). -->
+  <rect width="64" height="64" rx="14" fill="#0F1B2D"/>
+  <path d="M32 12c-11 0-20 9-20 20s9 20 20 20c3.6 0 7-1 9.9-2.7L48 55l3-3-5.4-5.6A19.9 19.9 0 0 0 52 32c0-11-9-20-20-20Zm0 6a14 14 0 1 1 0 28 14 14 0 0 1 0-28Z" fill="#C9A227"/>
+</svg>

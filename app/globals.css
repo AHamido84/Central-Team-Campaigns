@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * ============ QASWARAH BRAND TOKENS ============
+ * Change the three brand colors here. Values are RGB triplets so Tailwind
+ * opacity modifiers work (bg-brand-primary/10). The hex is in the comment.
+ */
+:root {
+  --brand-primary: 15 27 45;      /* #0F1B2D deep navy (temporary default) */
+  --brand-secondary: 42 58 84;    /* #2A3A54 navy tint (temporary default) */
+  --brand-accent: 201 162 39;     /* #C9A227 gold (temporary default) */
+
+  --background: 245 246 248;      /* #F5F6F8 */
+  --foreground: 15 27 45;
+  --card: 255 255 255;
+  --card-foreground: 15 27 45;
+  --popover: 255 255 255;
+  --popover-foreground: 15 27 45;
+  --primary: var(--brand-primary);
+  --primary-foreground: 255 255 255;
+  --secondary: 234 236 241;
+  --secondary-foreground: 15 27 45;
+  --accent: var(--brand-accent);
+  --accent-foreground: 15 27 45;
+  --muted: 238 240 244;
+  --muted-foreground: 100 112 132;
+  --border: 226 229 236;
+  --input: 214 218 227;
+  --ring: var(--brand-accent);
+  --destructive: 200 50 50;
+  --destructive-foreground: 255 255 255;
+  --success: 22 140 90;
+  --success-foreground: 255 255 255;
+  --warning: 214 140 20;
+  --warning-foreground: 255 255 255;
+  --sidebar: var(--brand-primary);
+  --sidebar-foreground: 232 236 243;
+  --sidebar-muted: 150 162 184;
+  --radius: 0.875rem;
+}
+
+.dark {
+  --background: 10 15 25;
+  --foreground: 232 236 243;
+  --card: 18 26 40;
+  --card-foreground: 232 236 243;
+  --popover: 18 26 40;
+  --popover-foreground: 232 236 243;
+  --primary: var(--brand-accent);
+  --primary-foreground: 15 27 45;
+  --secondary: 30 40 58;
+  --secondary-foreground: 232 236 243;
+  --muted: 26 35 52;
+  --muted-foreground: 150 162 184;
+  --border: 36 47 66;
+  --input: 46 58 80;
+  --sidebar: 12 19 32;
+  --sidebar-foreground: 232 236 243;
+  --sidebar-muted: 130 142 164;
+}
+
+@layer base {
+  * { @apply border-border; }
+  html { -webkit-tap-highlight-color: transparent; }
+  body { @apply bg-background text-foreground antialiased; font-feature-settings: "kern"; }
+  /* Numbers, currency and English text use Inter with tabular figures. */
+  .num { font-family: var(--font-latin), system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+}
