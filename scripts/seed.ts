@@ -1,5 +1,5 @@
 import "./env";
-import { getAll, bulkInsert, flushWrites, update, upsertMany } from "../lib/sheets/repository";
+import { getAll, bulkInsert, bulkUpdate, flushWrites, update, upsertMany } from "../lib/sheets/repository";
 import { rowKey } from "../lib/import/row-key";
 import { addDays, todayISO } from "../lib/dates";
 import { initSheets } from "../lib/sheets/init";
@@ -56,6 +56,7 @@ async function main() {
   await seedCompaniesAndCampaigns();
   await seedResults();
   await seedBudgetsAndTargets();
+  await seedCreatives();
   console.log("Done.");
 }
 
@@ -228,6 +229,68 @@ async function seedBudgetsAndTargets() {
   await bulkInsert("Targets", targets, ACTOR);
   await flushWrites();
   console.log(`  + Budgets: ${budgets.length} rows, Targets: ${targets.length} rows`);
+}
+
+/* ---------- Creatives: one per seeded ad (linked to its results) plus work in progress ---------- */
+async function seedCreatives() {
+  if ((await getAll("Creatives", { includeDeleted: true })).length) {
+    console.log("  = Creatives: already has rows, skipped");
+    return;
+  }
+  const [campaigns, results] = await Promise.all([getAll("Campaigns"), getAll("DailyResults")]);
+  const approvedAt = addDays(todayISO(), -50) + "T09:00:00.000Z";
+  const designers = ["نورة المصممة", "فهد"];
+  const ctas = { Leads: "سجّل الآن", Messages: "أرسل رسالة", Sales: "اطلب الآن", Awareness: "اعرف المزيد", Traffic: "زر الموقع", Engagement: "شارك" } as const;
+  const live = campaigns.flatMap((c, i) =>
+    [0, 1].map((k) => ({
+      company_id: c.company_id,
+      campaign_id: c.id,
+      title: `${c.name} | ${k === 0 ? "فيديو 9:16" : "صورة 1:1"}`,
+      type: (k === 0 ? "video" : "image") as "video" | "image",
+      aspect_ratio: (k === 0 ? "9:16" : "1:1") as "9:16" | "1:1",
+      headline: c.name.split(" - ")[0],
+      primary_text: `${c.name.split(" - ")[0]}: عرض لفترة محدودة. ${k === 0 ? "شاهد الفيديو واعرف التفاصيل." : "التفاصيل في الصورة."}`,
+      cta: ctas[c.objective],
+      designer: designers[(i + k) % 2],
+      copywriter: "ريم",
+      status: (c.status === "active" ? "live" : "paused") as "live" | "paused",
+      version: 1,
+      approved_by: "manager@qaswarah.test",
+      approved_at: approvedAt,
+      tags: [k === 0 ? "فيديو" : "صورة", { Leads: "عملاء", Messages: "رسائل", Sales: "مبيعات", Awareness: "وعي", Traffic: "زيارات", Engagement: "تفاعل" }[c.objective]],
+    })),
+  );
+  const c0 = campaigns[0];
+  const c4 = campaigns[4];
+  const c8 = campaigns[8];
+  const wip = [
+    { company_id: c0.company_id, campaign_id: c0.id, title: "مشروع الياسمين | فيديو جولة الشقة النموذجية", type: "video" as const, aspect_ratio: "9:16" as const, status: "review" as const, version: 2, designer: designers[0], tags: ["بديل للإعلان المرهق"] },
+    { company_id: c0.company_id, campaign_id: c0.id, title: "مشروع الياسمين | كاروسيل المخططات", type: "carousel" as const, aspect_ratio: "1:1" as const, status: "revisions" as const, version: 1, designer: designers[1], tags: [] },
+    { company_id: c4.company_id, campaign_id: c4.id, title: "قائمة الشتاء | ريلز الشيف", type: "reel" as const, aspect_ratio: "9:16" as const, status: "in_progress" as const, version: 1, designer: designers[0], tags: ["ريلز"] },
+    { company_id: c4.company_id, campaign_id: "", title: "فكرة: تحدي التقييمات مع العملاء", type: "UGC" as const, aspect_ratio: "9:16" as const, status: "idea" as const, version: 1, designer: "", tags: ["UGC"] },
+    { company_id: c8.company_id, campaign_id: c8.id, title: "تبييض الأسنان | قبل وبعد 4:5", type: "image" as const, aspect_ratio: "4:5" as const, status: "approved" as const, version: 1, designer: designers[1], approved_by: "manager@qaswarah.test", approved_at: approvedAt, tags: ["قبل وبعد"] },
+    { company_id: c8.company_id, campaign_id: "", title: "فكرة: سلسلة نصائح طبيب الأسنان", type: "story" as const, aspect_ratio: "9:16" as const, status: "idea" as const, version: 1, designer: "", tags: [] },
+  ];
+  const creatives = await bulkInsert("Creatives", [...live, ...wip], ACTOR);
+  const byTitle = new Map(creatives.map((c) => [`${c.company_id}|${c.title}`, c.id]));
+
+  type V = { creative_id: string; version: number; revision_notes: string; review_status: "pending" | "approved" | "changes_requested"; reviewer?: string; review_comment?: string; reviewed_at?: string };
+  const versions = creatives.flatMap((c): V[] => {
+    if (c.status === "idea" || c.status === "in_progress") return [];
+    if (c.status === "review")
+      return [
+        { creative_id: c.id, version: 1, revision_notes: "", review_status: "changes_requested" as const, reviewer: "manager@qaswarah.test", review_comment: "الافتتاحية بطيئة، نحتاج لقطة الشقة في أول ثانيتين.", reviewed_at: approvedAt },
+        { creative_id: c.id, version: 2, revision_notes: "نقلنا لقطة الصالة إلى البداية وأضفنا السعر كنص على الشاشة.", review_status: "pending" as const },
+      ];
+    if (c.status === "revisions") return [{ creative_id: c.id, version: 1, revision_notes: "", review_status: "changes_requested" as const, reviewer: "manager@qaswarah.test", review_comment: "الخط صغير على الجوال، كبّر الأسعار.", reviewed_at: approvedAt }];
+    return [{ creative_id: c.id, version: 1, revision_notes: "", review_status: "approved" as const, reviewer: "manager@qaswarah.test", review_comment: "", reviewed_at: approvedAt }];
+  });
+  await bulkInsert("CreativeVersions", versions, ACTOR);
+
+  const links = results.filter((r) => !r.creative_id && byTitle.has(`${r.company_id}|${r.ad_name}`)).map((r) => ({ id: r.id, patch: { creative_id: byTitle.get(`${r.company_id}|${r.ad_name}`)! } }));
+  await bulkUpdate("DailyResults", links);
+  await flushWrites();
+  console.log(`  + Creatives: ${creatives.length} rows, versions: ${versions.length}, linked results: ${links.length}`);
 }
 
 main().catch((e) => {

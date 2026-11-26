@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BUDGET_TYPES, CAMPAIGN_OBJECTIVES, CAMPAIGN_STATUS, COMPANY_STATUS } from "./entities";
+import { ASPECT_RATIOS, BUDGET_TYPES, CAMPAIGN_OBJECTIVES, CAMPAIGN_STATUS, COMPANY_STATUS, CREATIVE_STATUS, CREATIVE_TYPES } from "./entities";
 
 /**
  * Form schemas, shared by the browser (react-hook-form) and the Server
@@ -70,3 +70,38 @@ export type PlatformInputT = z.output<typeof PlatformInput>;
 export type AdAccountInputT = z.output<typeof AdAccountInput>;
 export type CampaignInputT = z.output<typeof CampaignInput>;
 export type AdSetInputT = z.output<typeof AdSetInput>;
+
+/* ---------- Creatives ---------- */
+const tagList = z
+  .union([z.array(z.string()), z.string()])
+  .transform((v) => (Array.isArray(v) ? v : v.split(/[,،]/)).map((s) => s.trim()).filter(Boolean))
+  .default([]);
+
+export const CreativeInput = z.object({
+  company_id: req(),
+  campaign_id: opt,
+  title: req(2),
+  type: z.enum(CREATIVE_TYPES).default("image"),
+  aspect_ratio: z.enum(ASPECT_RATIOS).default("1:1"),
+  file_url: optUrl,
+  thumbnail_url: optUrl,
+  primary_text: opt,
+  headline: opt,
+  cta: opt,
+  designer: opt,
+  copywriter: opt,
+  status: z.enum(CREATIVE_STATUS).default("idea"),
+  tags: tagList,
+  external_ad_id: opt,
+});
+
+export const CreativeVersionInput = z.object({
+  file_url: optUrl,
+  thumbnail_url: optUrl,
+  revision_notes: opt,
+});
+
+export const CreativeReviewInput = z.object({
+  decision: z.enum(["approved", "changes_requested"]),
+  comment: opt,
+});

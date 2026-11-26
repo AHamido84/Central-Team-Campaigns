@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { CalendarDays, FileBarChart, Palette, Pencil, Wallet } from "lucide-react";
+import { CalendarDays, FileBarChart, Pencil, Wallet } from "lucide-react";
+import { CreativesSection } from "@/components/creatives/creatives-section";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdAccountsPanel } from "@/components/companies/ad-accounts-panel";
 import { ArchiveCompanyButton } from "@/components/companies/archive-button";
@@ -60,8 +61,10 @@ export default async function CompanyPage({ params, searchParams }: { params: Pr
   } else if (tab === "accounts") {
     const [accounts, platforms] = await Promise.all([listAdAccounts(id), listPlatforms()]);
     body = <AdAccountsPanel companyId={id} accounts={accounts} platforms={platforms.filter((p) => p.is_active)} canManage={can(user, "campaign:manage", id)} />;
+  } else if (tab === "creatives") {
+    body = <CreativesSection user={user} sp={sp} fixedCompanyId={id} />;
   } else {
-    const soon = { creatives: [Palette, 5], schedule: [CalendarDays, 6], budgets: [Wallet, 7], reports: [FileBarChart, 8] } as const;
+    const soon = { schedule: [CalendarDays, 6], budgets: [Wallet, 7], reports: [FileBarChart, 8] } as const;
     const [Icon, phase] = soon[tab];
     body = <EmptyState icon={Icon} title={t("soon.title", { section: t(`companies.tabs.${tab}`) })} body={t("soon.body", { phase: t("common.phase", { n: phase }) })} />;
   }

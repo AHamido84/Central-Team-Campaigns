@@ -4,6 +4,7 @@ import { zBool, zDate, zEnum, zList, zNum, zStr } from "./coerce";
 /* ---------- Enums ---------- */
 export const ROLES = ["Admin", "Manager", "MediaBuyer", "Designer", "Viewer"] as const;
 export type Role = (typeof ROLES)[number];
+export type CreativeStatus = (typeof CREATIVE_STATUS)[number];
 
 export const COMPANY_STATUS = ["active", "paused", "archived"] as const;
 export const CAMPAIGN_OBJECTIVES = ["Leads", "Sales", "Awareness", "Traffic", "Messages", "Engagement"] as const;
