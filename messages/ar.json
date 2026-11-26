@@ -130,7 +130,8 @@
     "endBeforeStart": "تاريخ النهاية قبل تاريخ البداية",
     "duplicate": "هذا الاسم موجود مسبقًا",
     "adAccountMismatch": "الحساب الإعلاني لا يتبع هذه الشركة أو المنصة",
-    "campaignMismatch": "الحملة لا تتبع هذه الشركة أو المنصة"
+    "campaignMismatch": "الحملة لا تتبع هذه الشركة أو المنصة",
+    "time": "اكتب الوقت بصيغة 24 ساعة مثل 18:30"
   },
   "errors": {
     "forbidden": "ليست لديك صلاحية لهذا الإجراء",
@@ -563,7 +564,8 @@
       "import": "استورد",
       "rollback": "تراجع عن",
       "approve": "اعتمد",
-      "reject": "رفض"
+      "reject": "رفض",
+      "publish": "نشر"
     },
     "entity": {
       "Campaign": "الحملة",
@@ -695,5 +697,56 @@
     "linkSelected": "ربط المحدد ({n})",
     "linkedToast": "رُبط {n} صف من النتائج",
     "deleteConfirm": "حذف هذا التصميم؟ سيُفك ربط نتائجه."
+  },
+  "schedule": {
+    "intro": "متى يُنشر كل تصميم وعلى أي منصة، ومن المسؤول عنه.",
+    "add": "جدولة منشور",
+    "edit": "تعديل الجدولة",
+    "details": "تفاصيل المنشور",
+    "view": {
+      "month": "شهر",
+      "week": "أسبوع",
+      "list": "قائمة"
+    },
+    "prev": "السابق",
+    "next": "التالي",
+    "today": "اليوم",
+    "allOwners": "كل المسؤولين",
+    "status": {
+      "scheduled": "مجدول",
+      "published": "منشور",
+      "late": "متأخر",
+      "cancelled": "ملغى"
+    },
+    "f": {
+      "creative_id": "التصميم",
+      "platform_id": "المنصة",
+      "campaign_id": "الحملة",
+      "scheduled_date": "تاريخ النشر",
+      "scheduled_time": "الوقت",
+      "owner": "المسؤول",
+      "status": "الحالة",
+      "notes": "ملاحظات"
+    },
+    "notApprovedYet": "هذا التصميم ما زال في مرحلة: {status}. يمكنك جدولته الآن، لكن اعتمده قبل موعد النشر.",
+    "markPublished": "تم النشر",
+    "cancelPost": "إلغاء المنشور",
+    "publishedToast": "سُجل المنشور كمنشور",
+    "publishedLive": "سُجل النشر وأصبح التصميم منشورًا",
+    "cancelledToast": "أُلغي المنشور",
+    "moved": "نُقل المنشور إلى {date}",
+    "more": "و{n} أخرى",
+    "emptyRange": "لا توجد منشورات مجدولة في هذه الفترة.",
+    "widgetToday": "منشورات اليوم",
+    "widgetTodayHint": "{n} منشور اليوم",
+    "widgetWeek": "هذا الأسبوع",
+    "widgetWeekHint": "{n} منشور في الأيام السبعة القادمة",
+    "nothingToday": "لا توجد منشورات اليوم.",
+    "nothingWeek": "لا توجد منشورات مجدولة هذا الأسبوع.",
+    "lateCount": "{n} متأخر",
+    "openCalendar": "فتح الجدول",
+    "creativePosts": "جدول النشر",
+    "scheduleThis": "جدولة",
+    "noPosts": "لم يُجدول هذا التصميم بعد."
   }
 }

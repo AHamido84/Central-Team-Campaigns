@@ -19,6 +19,8 @@ import { creativeFilterOptions, getCreativeDetail, unlinkedAds } from "@/lib/dat
 import { userNameMap } from "@/lib/data/lookups";
 import { formatCurrency, formatNumber, formatPercent } from "@/lib/format";
 import { alertThresholds } from "@/lib/settings";
+import { listSchedule, scheduleOptions } from "@/lib/data/schedule";
+import { AddScheduleButton } from "@/components/schedule/add-schedule-button";
 
 export default async function CreativePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -29,7 +31,15 @@ export default async function CreativePage({ params }: { params: Promise<{ id: s
   const { creative: c, company, perf, fatigue } = d;
   const canManage = can(user, "creative:manage", c.company_id);
   const canLink = canManage || can(user, "campaign:manage", c.company_id);
-  const [options, names, th, unlinked] = await Promise.all([creativeFilterOptions(user, locale), userNameMap(), alertThresholds(), canLink ? unlinkedAds(user, c.company_id) : Promise.resolve([])]);
+  const canSchedule = can(user, "schedule:manage", c.company_id);
+  const [options, names, th, unlinked, posts, schedOptions] = await Promise.all([
+    creativeFilterOptions(user, locale),
+    userNameMap(),
+    alertThresholds(),
+    canLink ? unlinkedAds(user, c.company_id) : Promise.resolve([]),
+    listSchedule(user, { from: "0000-01-01", to: "9999-12-31", company: c.company_id }, locale).then((l) => l.filter((e) => e.creative_id === c.id)),
+    canSchedule ? scheduleOptions(user, locale) : Promise.resolve(null),
+  ]);
   const cur = company.currency;
   const pct = (v: number | null) => (v === null ? "–" : formatPercent(v, locale));
 
@@ -102,6 +112,24 @@ export default async function CreativePage({ params }: { params: Promise<{ id: s
               ))}
             </dl>
           </Card>
+          <Panel
+            title={t("schedule.creativePosts")}
+            action={schedOptions ? <AddScheduleButton options={schedOptions} creativeId={c.id} defaultOwner={user.email} canPublish fixedCompanyId={c.company_id} variant="outline" label={t("schedule.scheduleThis")} /> : undefined}
+          >
+            {posts.length ? (
+              <ul className="space-y-1.5 text-sm">
+                {posts.map((p) => (
+                  <li key={p.id} className="flex items-center gap-2">
+                    <span className="num text-xs text-muted-foreground" dir="ltr">{p.scheduled_date} {p.scheduled_time}</span>
+                    <span className="truncate">{p.platform_name}</span>
+                    <span className={p.effective === "late" ? "ms-auto text-xs text-destructive" : p.effective === "published" ? "ms-auto text-xs text-success" : "ms-auto text-xs text-muted-foreground"}>{t(`schedule.status.${p.effective}`)}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground">{t("schedule.noPosts")}</p>
+            )}
+          </Panel>
           <Panel title={t("creatives.versions")}>
             <VersionsPanel creativeId={c.id} versions={d.versions} current={c.version} canManage={canManage} canApprove={can(user, "creative:approve", c.company_id)} names={names} />
           </Panel>

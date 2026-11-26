@@ -9,7 +9,7 @@ import { DailyCharts, SpendBars, SpendDonut } from "./charts";
 import { KpiGrid } from "./kpi-grid";
 import { AlertsBadge, AlertsList, NoData, PacingList, Panel, RankingTable, TopAdsTable } from "./panels";
 
-export async function DashboardView({ data, single = false, canImport = false }: { data: DashboardData; single?: boolean; canImport?: boolean }) {
+export async function DashboardView({ data, single = false, canImport = false, schedule }: { data: DashboardData; single?: boolean; canImport?: boolean; schedule?: React.ReactNode }) {
   const t = await getTranslations();
   const { currency, range } = data;
   const today = todayISO();
@@ -39,6 +39,8 @@ export async function DashboardView({ data, single = false, canImport = false }:
       ) : (
         <KpiGrid kpis={data.kpis} currency={currency} prevLabel={prevLabel} />
       )}
+
+      {schedule}
 
       <div className="grid gap-4 xl:grid-cols-3">
         <Panel title={t("dashboard.dailyTitle")} description={t("dashboard.dailyHint")} className="xl:col-span-2">

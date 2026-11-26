@@ -130,7 +130,8 @@
     "endBeforeStart": "End date is before start date",
     "duplicate": "This name already exists",
     "adAccountMismatch": "This ad account doesn't belong to this company or platform",
-    "campaignMismatch": "Campaign doesn't belong to this company or platform"
+    "campaignMismatch": "Campaign doesn't belong to this company or platform",
+    "time": "Use 24-hour time, like 18:30"
   },
   "errors": {
     "forbidden": "You don't have permission for this",
@@ -563,7 +564,8 @@
       "import": "imported",
       "rollback": "rolled back",
       "approve": "approved",
-      "reject": "rejected"
+      "reject": "rejected",
+      "publish": "published"
     },
     "entity": {
       "Campaign": "the campaign",
@@ -695,5 +697,56 @@
     "linkSelected": "Link selected ({n})",
     "linkedToast": "Linked {n} result rows",
     "deleteConfirm": "Delete this creative? Its results will be unlinked."
+  },
+  "schedule": {
+    "intro": "When each creative goes out, on which platform, and who owns it.",
+    "add": "Schedule a post",
+    "edit": "Edit scheduled post",
+    "details": "Post details",
+    "view": {
+      "month": "Month",
+      "week": "Week",
+      "list": "List"
+    },
+    "prev": "Previous",
+    "next": "Next",
+    "today": "Today",
+    "allOwners": "All owners",
+    "status": {
+      "scheduled": "Scheduled",
+      "published": "Published",
+      "late": "Late",
+      "cancelled": "Cancelled"
+    },
+    "f": {
+      "creative_id": "Creative",
+      "platform_id": "Platform",
+      "campaign_id": "Campaign",
+      "scheduled_date": "Publish date",
+      "scheduled_time": "Time",
+      "owner": "Owner",
+      "status": "Status",
+      "notes": "Notes"
+    },
+    "notApprovedYet": "This creative is still at: {status}. You can schedule it now, but approve it before the publish date.",
+    "markPublished": "Mark published",
+    "cancelPost": "Cancel post",
+    "publishedToast": "Marked as published",
+    "publishedLive": "Marked as published and the creative is now live",
+    "cancelledToast": "Post cancelled",
+    "moved": "Moved to {date}",
+    "more": "+{n} more",
+    "emptyRange": "Nothing scheduled in this period.",
+    "widgetToday": "Today's posts",
+    "widgetTodayHint": "{n} posts today",
+    "widgetWeek": "This week",
+    "widgetWeekHint": "{n} posts in the next 7 days",
+    "nothingToday": "Nothing scheduled today.",
+    "nothingWeek": "Nothing scheduled this week.",
+    "lateCount": "{n} late",
+    "openCalendar": "Open calendar",
+    "creativePosts": "Publishing schedule",
+    "scheduleThis": "Schedule",
+    "noPosts": "This creative isn't scheduled yet."
   }
 }

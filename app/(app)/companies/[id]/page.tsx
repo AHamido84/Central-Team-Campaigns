@@ -1,5 +1,8 @@
 import { notFound } from "next/navigation";
-import { CalendarDays, FileBarChart, Pencil, Wallet } from "lucide-react";
+import { FileBarChart, Pencil, Wallet } from "lucide-react";
+import { ScheduleSection } from "@/components/schedule/schedule-section";
+import { ScheduleWidgets } from "@/components/schedule/schedule-widgets";
+import { scheduleWidgets } from "@/lib/data/schedule";
 import { CreativesSection } from "@/components/creatives/creatives-section";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdAccountsPanel } from "@/components/companies/ad-accounts-panel";
@@ -38,7 +41,7 @@ export default async function CompanyPage({ params, searchParams }: { params: Pr
   let body: React.ReactNode;
   if (tab === "overview") {
     const filters = { ...parseFilters(sp), company: id };
-    const [data, options] = await Promise.all([dashboardData(user, filters, locale), filterOptions(user, locale)]);
+    const [data, options, sched] = await Promise.all([dashboardData(user, filters, locale), filterOptions(user, locale), scheduleWidgets(user, locale, id)]);
     body = (
       <div className="space-y-4">
         <Card>
@@ -52,7 +55,7 @@ export default async function CompanyPage({ params, searchParams }: { params: Pr
           </CardContent>
         </Card>
         <FilterBar filters={filters} options={options} hideCompany keep={["tab"]} />
-        <DashboardView data={data} single canImport={can(user, "results:import", id)} />
+        <DashboardView data={data} single canImport={can(user, "results:import", id)} schedule={<ScheduleWidgets w={sched} companyId={id} />} />
       </div>
     );
   } else if (tab === "campaigns") {
@@ -63,8 +66,10 @@ export default async function CompanyPage({ params, searchParams }: { params: Pr
     body = <AdAccountsPanel companyId={id} accounts={accounts} platforms={platforms.filter((p) => p.is_active)} canManage={can(user, "campaign:manage", id)} />;
   } else if (tab === "creatives") {
     body = <CreativesSection user={user} sp={sp} fixedCompanyId={id} />;
+  } else if (tab === "schedule") {
+    body = <ScheduleSection user={user} sp={sp} fixedCompanyId={id} />;
   } else {
-    const soon = { schedule: [CalendarDays, 6], budgets: [Wallet, 7], reports: [FileBarChart, 8] } as const;
+    const soon = { budgets: [Wallet, 7], reports: [FileBarChart, 8] } as const;
     const [Icon, phase] = soon[tab];
     body = <EmptyState icon={Icon} title={t("soon.title", { section: t(`companies.tabs.${tab}`) })} body={t("soon.body", { phase: t("common.phase", { n: phase }) })} />;
   }

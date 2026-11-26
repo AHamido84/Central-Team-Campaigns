@@ -25,3 +25,21 @@ export function diffDays(fromIso: string, toIso: string): number {
 }
 
 export const inRange = (d: string, from: string, to: string) => d >= from && d <= to;
+
+/** Day of week, 0 = Sunday. */
+export const weekday = (iso: string) => new Date(`${iso}T00:00:00Z`).getUTCDay();
+
+/** Weeks start on Sunday (Saudi work week). */
+export const weekStart = (iso: string) => addDays(iso, -weekday(iso));
+
+export function addMonths(iso: string, n: number): string {
+  const [y, m] = iso.split("-").map(Number);
+  const d = new Date(Date.UTC(y, m - 1 + n, 1));
+  return d.toISOString().slice(0, 10);
+}
+
+/** The 6x7 grid of days shown for the month that contains iso. */
+export function monthGrid(iso: string): string[] {
+  const start = weekStart(monthStart(iso));
+  return Array.from({ length: 42 }, (_, i) => addDays(start, i));
+}

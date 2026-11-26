@@ -57,6 +57,7 @@ async function main() {
   await seedResults();
   await seedBudgetsAndTargets();
   await seedCreatives();
+  await seedSchedule();
   console.log("Done.");
 }
 
@@ -291,6 +292,40 @@ async function seedCreatives() {
   await bulkUpdate("DailyResults", links);
   await flushWrites();
   console.log(`  + Creatives: ${creatives.length} rows, versions: ${versions.length}, linked results: ${links.length}`);
+}
+
+/* ---------- Publishing schedule: past posts, today, the coming days, and two late ones ---------- */
+async function seedSchedule() {
+  if ((await getAll("CreativeSchedule", { includeDeleted: true })).length) {
+    console.log("  = CreativeSchedule: already has rows, skipped");
+    return;
+  }
+  const [creatives, campaigns] = await Promise.all([getAll("Creatives"), getAll("Campaigns")]);
+  const today = todayISO();
+  const owners = ["buyer@qaswarah.test", "manager@qaswarah.test", "designer@qaswarah.test"];
+  const times = ["10:00", "13:30", "18:00", "20:30", ""];
+  const camp = new Map(campaigns.map((c) => [c.id, c]));
+  const rows: Record<string, unknown>[] = [];
+  const add = (c: (typeof creatives)[number], offset: number, status: "scheduled" | "published" | "cancelled", i: number) => {
+    const cp = camp.get(c.campaign_id);
+    if (!cp) return;
+    const date = addDays(today, offset);
+    rows.push({ creative_id: c.id, company_id: c.company_id, platform_id: cp.platform_id, campaign_id: cp.id, scheduled_date: date, scheduled_time: times[i % times.length], owner: owners[i % owners.length], status, published_at: status === "published" ? `${date}T09:00:00.000Z` : "", notes: "" });
+  };
+  const ready = creatives.filter((c) => c.status === "live" || c.status === "approved" || c.status === "paused");
+  ready.forEach((c, i) => {
+    add(c, -21 + (i % 18), "published", i); // launched in the past
+    if (i % 2 === 0) add(c, i % 7, "scheduled", i + 1); // refresh posts today and in the coming days
+  });
+  // Two posts whose day passed without being published, and one cancelled.
+  if (ready[1]) add(ready[1], -2, "scheduled", 2);
+  if (ready[5]) add(ready[5], -1, "scheduled", 3);
+  if (ready[7]) add(ready[7], 3, "cancelled", 4);
+  const inReview = creatives.find((c) => c.status === "review");
+  if (inReview) add(inReview, 4, "scheduled", 0);
+  await bulkInsert("CreativeSchedule", rows as never[], ACTOR);
+  await flushWrites();
+  console.log(`  + CreativeSchedule: ${rows.length} rows`);
 }
 
 main().catch((e) => {

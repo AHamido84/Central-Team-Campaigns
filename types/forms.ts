@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ASPECT_RATIOS, BUDGET_TYPES, CAMPAIGN_OBJECTIVES, CAMPAIGN_STATUS, COMPANY_STATUS, CREATIVE_STATUS, CREATIVE_TYPES } from "./entities";
+import { ASPECT_RATIOS, BUDGET_TYPES, CAMPAIGN_OBJECTIVES, CAMPAIGN_STATUS, COMPANY_STATUS, CREATIVE_STATUS, CREATIVE_TYPES, SCHEDULE_STATUS } from "./entities";
 
 /**
  * Form schemas, shared by the browser (react-hook-form) and the Server
@@ -104,4 +104,16 @@ export const CreativeVersionInput = z.object({
 export const CreativeReviewInput = z.object({
   decision: z.enum(["approved", "changes_requested"]),
   comment: opt,
+});
+
+/* ---------- Publishing schedule ---------- */
+export const ScheduleInput = z.object({
+  creative_id: req(),
+  platform_id: req(),
+  campaign_id: opt,
+  scheduled_date: isoDate,
+  scheduled_time: z.union([z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "time"), z.literal("")]).default(""),
+  owner: opt,
+  status: z.enum(SCHEDULE_STATUS).default("scheduled"),
+  notes: opt,
 });
