@@ -239,6 +239,7 @@ export const UserSchema = z.object({
   name: zStr,
   role: zEnum([...ROLES], "Viewer"),
   company_ids: zList, // "*" = all companies
+  password_hash: zStr, // scrypt hash, never the password itself
   ...systemShape,
 });
 

@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Check, Copy, KeyRound, Pencil, Plus, Trash2, Wand2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { removeUser, saveUser } from "@/lib/actions/settings";
+import { removeUser, saveUser, suggestPassword } from "@/lib/actions/settings";
 import { ROLES, type Role } from "@/types/entities";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,16 +25,38 @@ const scoped = (r: Role) => r !== "Admin" && r !== "Manager";
 function UserDialog({ user, companies, trigger }: { user?: UserRow; companies: Company[]; trigger: React.ReactNode }) {
   const t = useTranslations();
   const [open, setOpen] = useState(false);
-  const [f, setF] = useState(() => ({ email: user?.email ?? "", name: user?.name ?? "", role: user?.role ?? ("Viewer" as Role), company_ids: user?.company_ids ?? ["*"] }));
+  const blank = () => ({ email: user?.email ?? "", name: user?.name ?? "", role: user?.role ?? ("Viewer" as Role), company_ids: user?.company_ids ?? ["*"], password: "" });
+  const [f, setF] = useState(blank);
+  const [done, setDone] = useState<{ login: string; password: string } | null>(null);
+  const [copied, setCopied] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { pending, run, errorText } = useAction();
   const all = f.company_ids.includes("*");
   const toggle = (id: string, on: boolean) => setF((x) => ({ ...x, company_ids: on ? [...x.company_ids.filter((c) => c !== "*"), id] : x.company_ids.filter((c) => c !== id) }));
   return (
-    <Dialog open={open} onOpenChange={(o) => { setOpen(o); setErrors({}); }}>
+    <Dialog open={open} onOpenChange={(o) => { setOpen(o); setErrors({}); setDone(null); if (!o) setF(blank()); }}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-lg">
-        <DialogHeader><DialogTitle>{user ? t("settings.users.edit") : t("settings.users.add")}</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{done ? t("settings.users.credsTitle") : user ? t("settings.users.edit") : t("settings.users.add")}</DialogTitle></DialogHeader>
+        {done ? (
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">{t("settings.users.credsBody")}</p>
+            <div className="space-y-2 rounded-lg border bg-muted/50 p-4 text-sm" dir="ltr">
+              <p><span className="text-muted-foreground">{t("settings.users.email")}:</span> <span className="num font-medium">{done.login}</span></p>
+              <p><span className="text-muted-foreground">{t("settings.users.password")}:</span> <span className="num font-medium">{done.password}</span></p>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigator.clipboard.writeText(`${t("settings.users.email")}: ${done.login}\n${t("settings.users.password")}: ${done.password}`).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); })}
+              >
+                {copied ? <Check /> : <Copy />}{t("settings.users.copyCreds")}
+              </Button>
+              <Button type="button" onClick={() => setOpen(false)}>{t("common.done")}</Button>
+            </DialogFooter>
+          </div>
+        ) : (
         <form
           noValidate
           className="space-y-4"
@@ -42,12 +64,18 @@ function UserDialog({ user, companies, trigger }: { user?: UserRow; companies: C
             e.preventDefault();
             run(() => saveUser(user?.id ?? null, f), {
               setError: (k, v) => setErrors((x) => ({ ...x, [k as string]: v.message ?? "" })),
-              onSuccess: () => setOpen(false),
+              onSuccess: () => (f.password ? setDone({ login: f.email.trim().toLowerCase(), password: f.password }) : setOpen(false)),
             });
           }}
         >
           <Field label={t("settings.users.email")} htmlFor="u_email" required error={errorText(errors.email)} hint={t("settings.users.emailHint")}>
-            <Input id="u_email" dir="ltr" type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
+            <Input id="u_email" dir="ltr" autoCapitalize="none" spellCheck={false} autoComplete="off" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
+          </Field>
+          <Field label={user ? t("settings.users.newPassword") : t("settings.users.password")} htmlFor="u_password" required={!user} error={errorText(errors.password)} hint={user ? t("settings.users.keepPassword") : t("settings.users.passwordHint")}>
+            <div className="flex gap-2">
+              <Input id="u_password" dir="ltr" className="num" autoComplete="new-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} />
+              <Button type="button" variant="outline" onClick={async () => setF({ ...f, password: await suggestPassword() })}><Wand2 />{t("settings.users.generate")}</Button>
+            </div>
           </Field>
           <Field label={t("settings.users.name")} htmlFor="u_name" required error={errorText(errors.name)}>
             <Input id="u_name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
@@ -82,12 +110,13 @@ function UserDialog({ user, companies, trigger }: { user?: UserRow; companies: C
             <Button type="submit" disabled={pending}>{pending ? t("common.saving") : t("common.save")}</Button>
           </DialogFooter>
         </form>
+        )}
       </DialogContent>
     </Dialog>
   );
 }
 
-export function UsersPanel({ users, companies, me, envAdmins }: { users: UserRow[]; companies: Company[]; me: string; envAdmins: string[] }) {
+export function UsersPanel({ users, companies, me, envAdmin }: { users: (UserRow & { hasPassword: boolean })[]; companies: Company[]; me: string; envAdmin: string }) {
   const t = useTranslations();
   const { pending, run } = useAction();
   const cName = new Map(companies.map((c) => [c.id, c.name]));
@@ -117,6 +146,7 @@ export function UsersPanel({ users, companies, me, envAdmins }: { users: UserRow
                 <TD>
                   <p className="font-medium">{u.name}{u.email === me && <span className="ms-2 text-xs text-muted-foreground">({t("settings.users.you")})</span>}</p>
                   <p className="num text-xs text-muted-foreground" dir="ltr">{u.email}</p>
+                  {!u.hasPassword && <p className="mt-1 flex items-center gap-1 text-xs text-warning"><KeyRound className="size-3" />{t("settings.users.noPassword")}</p>}
                 </TD>
                 <TD><Badge variant={variant(u.role)}>{t(`roles.${u.role}`)}</Badge></TD>
                 <TD className="max-w-xs text-sm text-muted-foreground">
@@ -137,9 +167,9 @@ export function UsersPanel({ users, companies, me, envAdmins }: { users: UserRow
           </TBody>
         </Table>
       </div>
-      {envAdmins.length > 0 && (
+      {envAdmin && (
         <p className="border-t px-5 py-3 text-xs text-muted-foreground">
-          {t("settings.users.envAdmins")} <span className="num" dir="ltr">{envAdmins.join(", ")}</span>
+          {t("settings.users.envAdmin")} <span className="num" dir="ltr">{envAdmin}</span>
         </p>
       )}
     </Card>

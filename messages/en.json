@@ -57,7 +57,8 @@
     "to": "To",
     "rows": "{n} rows",
     "other": "Other",
-    "loading": "Loading"
+    "loading": "Loading",
+    "done": "Done"
   },
   "roles": {
     "Admin": "Admin",
@@ -69,14 +70,14 @@
   "login": {
     "title": "Sign in",
     "subtitle": "The Central Team's hub for tracking ad campaigns across Qaswarah companies",
-    "google": "Continue with Google",
-    "devTitle": "Dev sign in (development only)",
-    "devHint": "Use an email from the Users tab or ADMIN_EMAILS",
-    "email": "Email",
-    "continue": "Continue",
-    "noProvider": "Sign in is not configured yet. Add AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET.",
-    "denied": "This email is not allowed. Ask an admin to add you.",
-    "error": "Sign in failed. Please try again."
+    "denied": "This account no longer has access. Contact an Admin.",
+    "error": "Sign in failed. Please try again.",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Sign in",
+    "forgot": "Forgot your password? Ask an Admin to set a new one.",
+    "invalid": "Wrong username or password.",
+    "locked": "Too many wrong attempts. Wait 15 minutes and try again."
   },
   "forbidden": {
     "title": "You don't have access to this page",
@@ -130,7 +131,11 @@
     "month": "Pick a month",
     "email": "Enter a valid email",
     "tooBig": "Value is too large",
-    "tooSmall": "Value is too small"
+    "tooSmall": "Value is too small",
+    "username": "Only lowercase letters, numbers and . _ - @, at least 3 characters",
+    "passwordShort": "Password must be at least 8 characters",
+    "passwordMismatch": "The passwords don't match",
+    "wrongPassword": "Current password is wrong"
   },
   "errors": {
     "forbidden": "You don't have permission for this",
@@ -156,7 +161,8 @@
     "pdfFailed": "The PDF could not be created. Please try again.",
     "selfDemote": "You can't remove your own Admin role.",
     "selfDelete": "You can't remove your own account.",
-    "lastAdmin": "At least one Admin must remain."
+    "lastAdmin": "At least one Admin must remain.",
+    "envAdminPassword": "This is the emergency account from the server settings. Change ADMIN_PASSWORD in Vercel."
   },
   "status": {
     "active": "Active",
@@ -327,12 +333,12 @@
     },
     "users": {
       "title": "Users and roles",
-      "subtitle": "The allow list: only emails added here can sign in with Google.",
-      "body": "Add a teammate by their Google email, then pick their role and companies.",
+      "subtitle": "The Admin creates each teammate's account with a username and password.",
+      "body": "Add a teammate, pick their role and companies, then send them their sign in details.",
       "add": "Add user",
       "edit": "Edit user",
-      "email": "Google email",
-      "emailHint": "The same email they use to sign in to Google",
+      "email": "Username",
+      "emailHint": "Lowercase letters or numbers, like ahmed.h, or their email",
       "name": "Name",
       "role": "Role",
       "companies": "Companies",
@@ -342,14 +348,23 @@
       "remove": "Remove user",
       "removeConfirm": "{name} will lose access right away. Their records and work stay as they are.",
       "removed": "User removed",
-      "envAdmins": "These emails are always Admin through ADMIN_EMAILS on the server:",
       "roleHelp": {
         "Admin": "Everything, including settings and users.",
         "Manager": "All companies: campaigns, creatives, approvals, budgets, reports and sharing. No settings.",
         "MediaBuyer": "Selected companies only: campaigns, imports, schedule, and only their own report.",
         "Designer": "Selected companies only: creatives, versions and schedule. No spend or reports.",
         "Viewer": "Read only for selected companies: dashboard, campaigns and reports."
-      }
+      },
+      "password": "Password",
+      "newPassword": "New password",
+      "passwordHint": "At least 8 characters. Use Generate for a strong one.",
+      "keepPassword": "Leave empty to keep the current password",
+      "generate": "Generate",
+      "noPassword": "No password set, they can't sign in",
+      "credsTitle": "Sign in details",
+      "credsBody": "Send these to your teammate in a safe way. The password won't be shown again, but you can set a new one any time.",
+      "copyCreds": "Copy details",
+      "envAdmin": "Emergency admin account from the server settings (ADMIN_USERNAME):"
     },
     "general": {
       "title": "Currency and alerts",
@@ -933,5 +948,15 @@
       "date": "Date"
     },
     "openBuilder": "Open in report builder"
+  },
+  "account": {
+    "title": "Change password",
+    "subtitle": "Username: {login}",
+    "current": "Current password",
+    "next": "New password",
+    "nextHint": "At least 8 characters",
+    "confirm": "Type the new password again",
+    "submit": "Save password",
+    "changed": "Password changed"
   }
 }

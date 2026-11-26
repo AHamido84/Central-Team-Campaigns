@@ -1,40 +1,33 @@
-import NextAuth, { type NextAuthConfig } from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
 import authConfig from "./auth.config";
-import { resolveUser } from "@/lib/auth/users";
-
-export const googleConfigured = Boolean(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
-/** Email-only sign in for local testing. Never available in production. */
-export const devLoginEnabled = process.env.NODE_ENV !== "production" && process.env.AUTH_DEV_LOGIN === "true";
+import { checkCredentials, resolveUser } from "@/lib/auth/users";
 
 const REFRESH_MS = 5 * 60 * 1000; // re-check role and access every 5 minutes
 
-const providers: NextAuthConfig["providers"] = [];
-if (googleConfigured) providers.push(Google);
-if (devLoginEnabled) {
-  providers.push(
-    Credentials({
-      id: "dev",
-      name: "Dev login",
-      credentials: { email: { label: "Email", type: "email" } },
-      async authorize(creds) {
-        const user = await resolveUser(String(creds?.email ?? ""));
-        return user ? { id: user.id, email: user.email, name: user.name } : null;
-      },
-    }),
-  );
+class Locked extends CredentialsSignin {
+  code = "locked";
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  providers,
+  providers: [
+    Credentials({
+      id: "password",
+      name: "Password",
+      credentials: { login: {}, password: {} },
+      async authorize(creds) {
+        const r = await checkCredentials(String(creds?.login ?? ""), String(creds?.password ?? ""));
+        if ("error" in r) {
+          if (r.error === "locked") throw new Locked();
+          return null;
+        }
+        return { id: r.user.id, email: r.user.email, name: r.user.name };
+      },
+    }),
+  ],
   callbacks: {
     ...authConfig.callbacks,
-    async signIn({ user }) {
-      // Allow list: only emails in the Users tab (or ADMIN_EMAILS) get in.
-      return (await resolveUser(user.email)) !== null;
-    },
     async jwt({ token, user }) {
       const stale = !token.checkedAt || Date.now() - Number(token.checkedAt) > REFRESH_MS;
       if (user || stale) {

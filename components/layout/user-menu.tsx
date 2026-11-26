@@ -1,6 +1,7 @@
 "use client";
 import { useTransition } from "react";
-import { LogOut } from "lucide-react";
+import Link from "next/link";
+import { KeyRound, LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { AuthUser } from "@/lib/auth/permissions";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +25,9 @@ export function UserMenu({ user, signOutAction }: { user: AuthUser; signOutActio
           <Badge variant="accent" className="mt-2">{t(`roles.${user.role}`)}</Badge>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/account"><KeyRound />{t("account.title")}</Link>
+        </DropdownMenuItem>
         <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={() => startTransition(() => signOutAction())}>
           <LogOut />
           {t("common.signOut")}

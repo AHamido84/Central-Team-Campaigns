@@ -130,7 +130,10 @@ export const MonthPlanInput = z.object({
 
 /* ---------- Settings ---------- */
 export const UserInput = z.object({
-  email: z.string().trim().toLowerCase().email("email"),
+  // The sign-in name: a short username (ahmed.h) or an email.
+  email: z.string().trim().toLowerCase().regex(/^[a-z0-9][a-z0-9._@+-]{2,63}$/, "username"),
+  // Required for a new user; leave empty on edit to keep the current password.
+  password: z.string().max(128, "tooLong").default(""),
   name: req(2),
   role: z.enum(ROLES),
   company_ids: z.array(z.string()).default(["*"]),
@@ -143,3 +146,8 @@ export const SettingsInput = z.object({
   alert_zero_results_days: z.coerce.number({ error: "number" }).int("number").min(1, "tooSmall").max(30, "tooBig"),
   alert_no_import_days: z.coerce.number({ error: "number" }).int("number").min(1, "tooSmall").max(30, "tooBig"),
 });
+
+export const PASSWORD_MIN = 8;
+export const ChangePasswordInput = z
+  .object({ current: z.string().min(1, "required"), next: z.string().min(PASSWORD_MIN, "passwordShort").max(128, "tooLong"), confirm: z.string() })
+  .refine((d) => d.next === d.confirm, { path: ["confirm"], message: "passwordMismatch" });

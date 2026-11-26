@@ -3,6 +3,10 @@ import { getAll, bulkInsert, bulkUpdate, flushWrites, update, upsertMany } from 
 import { rowKey } from "../lib/import/row-key";
 import { addDays, todayISO } from "../lib/dates";
 import { initSheets } from "../lib/sheets/init";
+import { hashPassword } from "../lib/auth/password";
+
+/** Password for every demo account. Only for the local test data. */
+export const DEMO_PASSWORD = "Demo@2026";
 
 /**
  * Demo data. Phase 1 seeds users, platforms and settings; later phases add
@@ -43,6 +47,10 @@ async function main() {
     { email: "designer@qaswarah.test", name: "نورة المصممة", role: "Designer", company_ids: ["*"] },
     { email: "viewer@qaswarah.test", name: "عميل للعرض فقط", role: "Viewer", company_ids: [] },
   ]);
+  // Demo accounts get the demo password (also fixes demo users seeded before passwords existed).
+  const demoHash = await hashPassword(DEMO_PASSWORD);
+  const noPw = (await getAll("Users")).filter((u) => u.email.endsWith("@qaswarah.test") && !u.password_hash);
+  if (noPw.length) await bulkUpdate("Users", noPw.map((u) => ({ id: u.id, patch: { password_hash: demoHash } })));
 
   await seedIfEmpty("Settings", [
     { key: "default_currency", value: "SAR" },
