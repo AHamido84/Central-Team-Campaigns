@@ -10,7 +10,7 @@ import { addDays, addMonths, weekStart } from "@/lib/dates";
 import { cn } from "@/lib/utils";
 import type { ScheduleView } from "./schedule-calendar";
 
-export function ScheduleToolbar({ view, anchor, today, options, hideCompany = false, action }: { view: ScheduleView; anchor: string; today: string; options: { companies: { id: string; name: string }[]; platforms: { id: string; name: string }[]; owners: { email: string; name: string }[] }; hideCompany?: boolean; action?: React.ReactNode }) {
+export function ScheduleToolbar({ view, anchor, options, hideCompany = false, action }: { view: ScheduleView; anchor: string; options: { companies: { id: string; name: string }[]; platforms: { id: string; name: string }[]; owners: { email: string; name: string }[] }; hideCompany?: boolean; action?: React.ReactNode }) {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();

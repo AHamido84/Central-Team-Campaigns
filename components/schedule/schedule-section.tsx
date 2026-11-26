@@ -33,7 +33,6 @@ export async function ScheduleSection({ user, sp, fixedCompanyId }: { user: Auth
       <ScheduleToolbar
         view={view}
         anchor={anchor}
-        today={today}
         options={options}
         hideCompany={!!fixedCompanyId}
         action={canManage ? <AddScheduleButton options={options} defaultOwner={defaultOwner} fixedCompanyId={fixedCompanyId} canPublish={canPublish} date={anchor >= today ? anchor : today} /> : undefined}
