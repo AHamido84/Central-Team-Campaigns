@@ -31,7 +31,7 @@ export class GoogleSheetBackend implements SheetBackend {
   constructor(private spreadsheetId: string, email: string, privateKey: string) {
     const auth = new JWT({
       email,
-      key: privateKey.replace(/\\n/g, "\n"),
+      key: privateKey,
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
     this.api = sheetsApi({ version: "v4", auth });

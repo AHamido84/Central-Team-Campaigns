@@ -8,6 +8,9 @@ const REFRESH_MS = 5 * 60 * 1000; // re-check role and access every 5 minutes
 class Locked extends CredentialsSignin {
   code = "locked";
 }
+class DatabaseDown extends CredentialsSignin {
+  code = "database";
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -20,6 +23,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const r = await checkCredentials(String(creds?.login ?? ""), String(creds?.password ?? ""));
         if ("error" in r) {
           if (r.error === "locked") throw new Locked();
+          if (r.error === "database") throw new DatabaseDown();
           return null;
         }
         return { id: r.user.id, email: r.user.email, name: r.user.name };

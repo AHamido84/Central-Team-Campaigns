@@ -77,7 +77,10 @@
     "submit": "Sign in",
     "forgot": "Forgot your password? Ask an Admin to set a new one.",
     "invalid": "Wrong username or password.",
-    "locked": "Too many wrong attempts. Wait 15 minutes and try again."
+    "locked": "Too many wrong attempts. Wait 15 minutes and try again.",
+    "database": "Couldn't reach the database (Google Sheet). A Vercel setting is probably missing.",
+    "config": "Sign in isn't fully set up on the server.",
+    "checkSetup": "Open the setup check"
   },
   "forbidden": {
     "title": "You don't have access to this page",
@@ -958,5 +961,58 @@
     "confirm": "Type the new password again",
     "submit": "Save password",
     "changed": "Password changed"
+  },
+  "setup": {
+    "title": "Setup check",
+    "allGood": "All settings look good. You can sign in.",
+    "needsFix": "A setting needs fixing. Fix the items marked red in Vercel, then redeploy.",
+    "redeploy": "After changing any variable in Vercel > Settings > Environment Variables, press Redeploy in the Deployments tab so the site picks it up. This page never shows a password or key.",
+    "back": "Back to sign in",
+    "check": {
+      "authSecret": {
+        "title": "AUTH_SECRET",
+        "fix": "Missing. Create one with npx auth secret and add it."
+      },
+      "adminAccount": {
+        "title": "Emergency account ADMIN_USERNAME and ADMIN_PASSWORD",
+        "fix": "Not set. Add it so you can sign in the first time."
+      },
+      "dataBackend": {
+        "title": "DATA_BACKEND = google",
+        "fix": "Must be exactly google. Without it the site tries a local test file that doesn't work on Vercel."
+      },
+      "serviceEmail": {
+        "title": "GOOGLE_SERVICE_ACCOUNT_EMAIL",
+        "fix": "Missing or wrong. Copy client_email from the JSON file; it ends with iam.gserviceaccount.com."
+      },
+      "privateKey": {
+        "title": "GOOGLE_PRIVATE_KEY",
+        "fix": "Missing or incomplete. Copy private_key from the JSON file in full, from -----BEGIN PRIVATE KEY----- to -----END PRIVATE KEY-----. You can also paste the whole JSON file."
+      },
+      "spreadsheetId": {
+        "title": "SPREADSHEET_ID",
+        "fix": "Missing or wrong. It's the part of the sheet link between /d/ and /edit."
+      },
+      "sheetAccess": {
+        "title": "Access to the sheet"
+      },
+      "tabs": {
+        "title": "Sheet tabs",
+        "fix": "Missing tabs: {tabs}"
+      },
+      "appUrl": {
+        "title": "APP_URL",
+        "fix": "Not set. Use the site address, like https://central-team-campaigns.vercel.app, so PDFs work."
+      }
+    },
+    "reason": {
+      "skipped": "Not checked because a setting above is missing.",
+      "notShared": "The sheet isn't shared with the service account. Open the sheet > Share > add {email} as Editor.",
+      "notFound": "Sheet not found. Check SPREADSHEET_ID.",
+      "badKey": "GOOGLE_PRIVATE_KEY is not valid. Copy it in full from the JSON file.",
+      "badAccount": "Google rejected the service account. Make sure the email and key come from the same JSON file and the key wasn't deleted.",
+      "apiDisabled": "Google Sheets API isn't enabled in the Google Cloud project. Enable it in APIs & Services > Library.",
+      "other": "The sheet couldn't be opened. Check the Vercel Logs for the reason."
+    }
   }
 }

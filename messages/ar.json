@@ -77,7 +77,10 @@
     "submit": "دخول",
     "forgot": "نسيت كلمة المرور؟ اطلب من مدير النظام تعيين كلمة جديدة لك.",
     "invalid": "اسم الدخول أو كلمة المرور غير صحيحة.",
-    "locked": "محاولات خاطئة كثيرة. انتظر 15 دقيقة ثم حاول مرة أخرى."
+    "locked": "محاولات خاطئة كثيرة. انتظر 15 دقيقة ثم حاول مرة أخرى.",
+    "database": "تعذّر الوصول إلى قاعدة البيانات (Google Sheet). غالبًا ينقص إعداد في Vercel.",
+    "config": "إعداد الدخول على الخادم غير مكتمل.",
+    "checkSetup": "افتح فحص الإعداد"
   },
   "forbidden": {
     "title": "لا تملك صلاحية لهذه الصفحة",
@@ -958,5 +961,58 @@
     "confirm": "أعد كتابة كلمة المرور الجديدة",
     "submit": "حفظ كلمة المرور",
     "changed": "تم تغيير كلمة المرور"
+  },
+  "setup": {
+    "title": "فحص الإعداد",
+    "allGood": "كل الإعدادات سليمة. يمكنك تسجيل الدخول.",
+    "needsFix": "هناك إعداد يحتاج تصحيحًا. أصلح البنود المعلّمة بالأحمر في Vercel، ثم أعد النشر.",
+    "redeploy": "بعد تعديل أي متغير في Vercel ← Settings ← Environment Variables، اضغط Redeploy من تبويب Deployments حتى يأخذ الموقع القيم الجديدة. هذه الصفحة لا تعرض أي كلمة سر أو مفتاح.",
+    "back": "الرجوع إلى تسجيل الدخول",
+    "check": {
+      "authSecret": {
+        "title": "AUTH_SECRET",
+        "fix": "غير موجود. أنشئ قيمة بالأمر npx auth secret وأضفها."
+      },
+      "adminAccount": {
+        "title": "حساب الطوارئ ADMIN_USERNAME و ADMIN_PASSWORD",
+        "fix": "غير مضبوط. أضفه لتتمكن من الدخول أول مرة."
+      },
+      "dataBackend": {
+        "title": "DATA_BACKEND = google",
+        "fix": "يجب أن تكون القيمة google بالضبط. بدونها يحاول الموقع استخدام ملف تجريبي لا يعمل على Vercel."
+      },
+      "serviceEmail": {
+        "title": "GOOGLE_SERVICE_ACCOUNT_EMAIL",
+        "fix": "غير موجود أو غير صحيح. انسخ قيمة client_email من ملف JSON، وتنتهي بـ iam.gserviceaccount.com."
+      },
+      "privateKey": {
+        "title": "GOOGLE_PRIVATE_KEY",
+        "fix": "غير موجود أو ناقص. انسخ قيمة private_key من ملف JSON كاملة، من -----BEGIN PRIVATE KEY----- إلى -----END PRIVATE KEY-----. يمكنك أيضًا لصق محتوى ملف JSON كله."
+      },
+      "spreadsheetId": {
+        "title": "SPREADSHEET_ID",
+        "fix": "غير موجود أو غير صحيح. هو الجزء من رابط الشيت بين /d/ و /edit."
+      },
+      "sheetAccess": {
+        "title": "الوصول إلى الشيت"
+      },
+      "tabs": {
+        "title": "تبويبات الشيت",
+        "fix": "تبويبات ناقصة: {tabs}"
+      },
+      "appUrl": {
+        "title": "APP_URL",
+        "fix": "غير مضبوط. ضع عنوان الموقع، مثل https://central-team-campaigns.vercel.app، حتى تعمل ملفات PDF."
+      }
+    },
+    "reason": {
+      "skipped": "لم يُفحص لأن أحد الإعدادات أعلاه ناقص.",
+      "notShared": "الشيت غير مشارَك مع حساب الخدمة. افتح الشيت ← Share ← أضف {email} بصلاحية Editor.",
+      "notFound": "لم يُعثر على الشيت. تأكد من SPREADSHEET_ID.",
+      "badKey": "المفتاح GOOGLE_PRIVATE_KEY غير صالح. انسخه كاملًا من ملف JSON.",
+      "badAccount": "Google رفضت حساب الخدمة. تأكد أن الإيميل والمفتاح من نفس ملف JSON، وأن المفتاح لم يُحذف.",
+      "apiDisabled": "Google Sheets API غير مفعّل في مشروع Google Cloud. فعّله من APIs & Services ← Library.",
+      "other": "تعذّر فتح الشيت. راجع سجلات Vercel (Logs) لمعرفة السبب."
+    }
   }
 }

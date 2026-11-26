@@ -22,14 +22,15 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       await signIn("password", { login: String(formData.get("login") ?? ""), password: String(formData.get("password") ?? ""), redirectTo: "/" });
     } catch (e) {
       if (e instanceof AuthError) {
-        const code = e.type === "CredentialsSignin" ? ((e as AuthError & { code?: string }).code === "locked" ? "locked" : "invalid") : "error";
+        const c = (e as AuthError & { code?: string }).code;
+        const code = e.type === "CredentialsSignin" ? (c === "locked" || c === "database" ? c : "invalid") : "config";
         redirect(`/login?error=${code}`);
       }
       throw e;
     }
   }
 
-  const ERR: Record<string, string> = { invalid: "login.invalid", locked: "login.locked", AccessDenied: "login.denied" };
+  const ERR: Record<string, string> = { invalid: "login.invalid", locked: "login.locked", AccessDenied: "login.denied", database: "login.database", config: "login.config", Configuration: "login.config" };
   const errorMsg = error ? t(ERR[error] ?? "login.error") : null;
 
   return (
@@ -66,7 +67,14 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <h2 className="text-2xl font-semibold">{t("login.title")}</h2>
           <p className="mt-2 text-sm text-muted-foreground lg:hidden">{t("login.subtitle")}</p>
 
-          {errorMsg && <p role="alert" className="mt-6 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{errorMsg}</p>}
+          {errorMsg && (
+            <p role="alert" className="mt-6 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+              {errorMsg}
+              {(error === "database" || error === "config" || error === "Configuration") && (
+                <> <a href="/setup-check" className="font-medium underline">{t("login.checkSetup")}</a></>
+              )}
+            </p>
+          )}
 
           <form action={login} className="mt-8 space-y-4">
             <div className="space-y-1.5">

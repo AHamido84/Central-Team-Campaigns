@@ -27,10 +27,19 @@ const toAuth = (u: { id: string; email: string; name: string; role: AuthUser["ro
 export async function resolveUser(login: string | null | undefined): Promise<AuthUser | null> {
   if (!login) return null;
   const e = login.trim().toLowerCase();
-  const u = (await getAll("Users")).find((x) => x.email.trim().toLowerCase() === e);
-  if (u) return toAuth(u);
   const env = envAdmin();
-  if (env && env.username === e) return { id: `env:${e}`, email: e, name: e.split("@")[0], role: "Admin", company_ids: ["*"] };
+  const asEnvAdmin = (): AuthUser => ({ id: `env:${e}`, email: e, name: e.split("@")[0], role: "Admin", company_ids: ["*"] });
+  let users;
+  try {
+    users = await getAll("Users");
+  } catch (err) {
+    // The emergency admin must work even when the sheet can't be reached, so they can fix the setup.
+    if (env && env.username === e) return asEnvAdmin();
+    throw err;
+  }
+  const u = users.find((x) => x.email.trim().toLowerCase() === e);
+  if (u) return toAuth(u);
+  if (env && env.username === e) return asEnvAdmin();
   return null;
 }
 
@@ -56,11 +65,23 @@ const sameText = (a: string, b: string) => {
 };
 
 /** Checks a sign-in name and password. Returns the user, or a reason it failed. */
-export async function checkCredentials(loginRaw: string, password: string): Promise<{ user: AuthUser } | { error: "invalid" | "locked" }> {
+export async function checkCredentials(loginRaw: string, password: string): Promise<{ user: AuthUser } | { error: "invalid" | "locked" | "database" }> {
   const login = loginRaw.trim().toLowerCase();
   if (!login || !password) return { error: "invalid" };
   if (isLocked(login)) return { error: "locked" };
-  const row = (await getAll("Users")).find((x) => x.email.trim().toLowerCase() === login);
+  let users;
+  try {
+    users = await getAll("Users");
+  } catch (err) {
+    console.error("[login] could not read the Users tab:", (err as Error).message);
+    const env = envAdmin();
+    if (env && env.username === login && sameText(password, env.password)) {
+      fails.delete(login);
+      return { user: { id: `env:${login}`, email: login, name: login.split("@")[0], role: "Admin", company_ids: ["*"] } };
+    }
+    return { error: "database" };
+  }
+  const row = users.find((x) => x.email.trim().toLowerCase() === login);
   let ok = false;
   let user: AuthUser | null = null;
   if (row?.password_hash) {
