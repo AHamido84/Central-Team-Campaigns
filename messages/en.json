@@ -1,5 +1,10 @@
 {
-  "app": { "name": "Qaswarah Ads Hub", "short": "Ads Hub", "org": "Qaswarah Holding", "team": "Central Team" },
+  "app": {
+    "name": "Qaswarah Ads Hub",
+    "short": "Ads Hub",
+    "org": "Qaswarah Holding",
+    "team": "Central Team"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "companies": "Companies",
@@ -25,9 +30,41 @@
     "comingSoon": "Coming soon",
     "phase": "Phase {n}",
     "back": "Back",
-    "home": "Home"
+    "home": "Home",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "all": "All",
+    "none": "None",
+    "actions": "Actions",
+    "open": "Open",
+    "confirmDelete": "Are you sure you want to delete this?",
+    "saved": "Saved",
+    "deleted": "Deleted",
+    "search": "Search...",
+    "export": "Export CSV",
+    "columns": "Columns",
+    "groupBy": "Group by",
+    "filters": "Filters",
+    "clear": "Clear",
+    "yes": "Yes",
+    "no": "No",
+    "notes": "Notes",
+    "details": "Details",
+    "from": "From",
+    "to": "To",
+    "rows": "{n} rows"
   },
-  "roles": { "Admin": "Admin", "Manager": "Manager", "MediaBuyer": "Media buyer", "Designer": "Designer", "Viewer": "Viewer" },
+  "roles": {
+    "Admin": "Admin",
+    "Manager": "Manager",
+    "MediaBuyer": "Media buyer",
+    "Designer": "Designer",
+    "Viewer": "Viewer"
+  },
   "login": {
     "title": "Sign in",
     "subtitle": "The Central Team's hub for tracking ad campaigns across Qaswarah companies",
@@ -40,7 +77,10 @@
     "denied": "This email is not allowed. Ask an admin to add you.",
     "error": "Sign in failed. Please try again."
   },
-  "forbidden": { "title": "You don't have access to this page", "body": "Your current role doesn't allow this page. Ask an admin to change your role if you need it." },
+  "forbidden": {
+    "title": "You don't have access to this page",
+    "body": "Your current role doesn't allow this page. Ask an admin to change your role if you need it."
+  },
   "dashboard": {
     "welcome": "Welcome, {name}",
     "intro": "This is the starter dashboard. KPIs, charts and alerts arrive in Phase 4.",
@@ -58,5 +98,170 @@
   "soon": {
     "title": "{section} is being built",
     "body": "This page will be ready in {phase}."
+  },
+  "validation": {
+    "required": "This field is required",
+    "tooLong": "Too long",
+    "number": "Enter a valid number",
+    "positive": "Must be zero or more",
+    "date": "Invalid date",
+    "url": "Invalid link, must start with https://",
+    "currency": "3-letter currency code like SAR",
+    "endBeforeStart": "End date is before start date",
+    "duplicate": "This name already exists",
+    "adAccountMismatch": "This ad account doesn't belong to this company or platform"
+  },
+  "errors": {
+    "forbidden": "You don't have permission for this",
+    "notFound": "Not found or already deleted",
+    "validation": "Please check the highlighted fields",
+    "unknown": "Something went wrong, please try again",
+    "adAccountInUse": "This account is linked to campaigns and can't be deleted"
+  },
+  "status": {
+    "active": "Active",
+    "paused": "Paused",
+    "archived": "Archived",
+    "planned": "Planned",
+    "ended": "Ended"
+  },
+  "companies": {
+    "subtitle": "Every company the Central Team markets for",
+    "add": "Add company",
+    "edit": "Edit company",
+    "archive": "Archive",
+    "restore": "Restore",
+    "showArchived": "Show archived",
+    "hideArchived": "Hide archived",
+    "emptyTitle": "No companies yet",
+    "emptyBody": "Add your first company to start tracking its campaigns, creatives and results.",
+    "emptyScoped": "You're not assigned to any company yet. Ask an admin to add you.",
+    "mtdSpend": "Month-to-date spend",
+    "ofBudget": "of {budget} budget",
+    "noBudget": "No monthly budget",
+    "activeCampaigns": "Active campaigns",
+    "overBudget": "Over budget",
+    "archiveConfirm": "The company leaves the active lists but keeps all its data. Continue?",
+    "archivedToast": "Company archived",
+    "restoredToast": "Company restored",
+    "f": {
+      "name_ar": "Arabic name",
+      "name_en": "English name",
+      "logo_url": "Logo URL",
+      "industry": "Industry",
+      "currency": "Currency",
+      "monthly_budget": "Monthly budget",
+      "status": "Status",
+      "account_manager": "Account manager",
+      "notes": "Notes"
+    },
+    "logoHint": "Direct image link (Google Drive or other)",
+    "tabs": {
+      "overview": "Overview",
+      "campaigns": "Campaigns",
+      "creatives": "Creatives",
+      "schedule": "Schedule",
+      "budgets": "Budgets & targets",
+      "accounts": "Ad accounts",
+      "reports": "Reports"
+    },
+    "overviewSoon": "The full performance dashboard for this company arrives in Phase 4."
+  },
+  "accounts": {
+    "title": "Ad accounts",
+    "add": "Add account",
+    "edit": "Edit account",
+    "emptyTitle": "No ad accounts",
+    "emptyBody": "Add the company's account on each platform to link campaigns to it.",
+    "f": {
+      "platform_id": "Platform",
+      "account_name": "Account name",
+      "external_account_id": "Platform account ID"
+    }
+  },
+  "campaigns": {
+    "subtitle": "All campaigns across companies and platforms",
+    "add": "Add campaign",
+    "edit": "Edit campaign",
+    "emptyTitle": "No campaigns yet",
+    "emptyBody": "Add a campaign by hand, or import Meta results and campaigns are created for you.",
+    "noMatch": "No campaigns match these filters",
+    "f": {
+      "company_id": "Company",
+      "platform_id": "Platform",
+      "ad_account_id": "Ad account",
+      "name": "Campaign name",
+      "objective": "Objective",
+      "start_date": "Start date",
+      "end_date": "End date",
+      "budget_type": "Budget type",
+      "budget": "Budget",
+      "status": "Status",
+      "media_buyer": "Media buyer",
+      "external_campaign_id": "Platform campaign ID",
+      "notes": "Notes"
+    },
+    "col": {
+      "spend": "Spend",
+      "results": "Results",
+      "cpr": "Cost / result",
+      "leads": "Leads",
+      "cpl": "CPL",
+      "dates": "Dates"
+    },
+    "objective": {
+      "Leads": "Leads",
+      "Sales": "Sales",
+      "Awareness": "Awareness",
+      "Traffic": "Traffic",
+      "Messages": "Messages",
+      "Engagement": "Engagement"
+    },
+    "budgetType": {
+      "daily": "Daily",
+      "lifetime": "Lifetime"
+    },
+    "group": {
+      "none": "No grouping",
+      "company": "Company",
+      "platform": "Platform"
+    },
+    "deleteConfirm": "The campaign is removed from lists. Its results stay in the sheet. Continue?",
+    "selectCompanyFirst": "Pick a company first",
+    "noAccount": "No account",
+    "adSets": "Ad sets",
+    "addAdSet": "Add ad set",
+    "editAdSet": "Edit ad set",
+    "adSetsEmpty": "No ad sets for this campaign.",
+    "as": {
+      "name": "Ad set name",
+      "audience": "Audience",
+      "placements": "Placements",
+      "budget": "Budget",
+      "status": "Status",
+      "external_adset_id": "Platform ad set ID"
+    },
+    "pageSoon": "Totals, daily trend and creative performance for this campaign arrive in Phase 4.",
+    "count": "{n} campaigns"
+  },
+  "platforms": {
+    "title": "Platforms",
+    "subtitle": "Ad platforms available in the app",
+    "add": "Add platform",
+    "edit": "Edit platform",
+    "f": {
+      "name": "Name",
+      "icon": "Icon key",
+      "is_active": "Active"
+    },
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "settings": {
+    "subtitle": "System administration",
+    "platforms": "Platforms",
+    "platformsBody": "Add and enable platforms",
+    "more": "Users, alerts, currency and import templates",
+    "moreBody": "Coming in Phase 9"
   }
 }

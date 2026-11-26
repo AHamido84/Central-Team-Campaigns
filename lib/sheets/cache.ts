@@ -2,8 +2,11 @@
 const TTL_MS = Number(process.env.SHEETS_CACHE_TTL_MS ?? 60_000);
 
 type Entry = { at: number; value: unknown };
-const store = new Map<string, Entry>();
-const inflight = new Map<string, Promise<unknown>>();
+// Kept on globalThis so every server bundle (pages, Server Actions, route
+// handlers) shares one cache and a write anywhere invalidates it everywhere.
+const g = globalThis as unknown as { __adsHubCache?: { store: Map<string, Entry>; inflight: Map<string, Promise<unknown>> } };
+g.__adsHubCache ??= { store: new Map(), inflight: new Map() };
+const { store, inflight } = g.__adsHubCache;
 
 export async function cached<T>(key: string, load: () => Promise<T>): Promise<T> {
   const hit = store.get(key);

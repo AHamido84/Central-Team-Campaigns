@@ -38,18 +38,19 @@ type PendingUpdate = {
   resolve: (row: Record<string, unknown> | null) => void;
   reject: (e: unknown) => void;
 };
-let queue: (PendingInsert | PendingUpdate)[] = [];
-let timer: ReturnType<typeof setTimeout> | null = null;
+type QueueState = { ops: (PendingInsert | PendingUpdate)[]; timer: ReturnType<typeof setTimeout> | null };
+const gq = globalThis as unknown as { __adsHubQueue?: QueueState };
+const Q = (gq.__adsHubQueue ??= { ops: [], timer: null });
 const FLUSH_MS = 15;
 
 function schedule() {
-  if (!timer) timer = setTimeout(() => void flush(), FLUSH_MS);
+  if (!Q.timer) Q.timer = setTimeout(() => void flush(), FLUSH_MS);
 }
 
 async function flush() {
-  timer = null;
-  const ops = queue;
-  queue = [];
+  Q.timer = null;
+  const ops = Q.ops;
+  Q.ops = [];
   if (!ops.length) return;
   const tabs = [...new Set(ops.map((o) => o.tab))];
   await withLock("__writes__", async () => {
@@ -107,14 +108,14 @@ async function flush() {
 
 function enqueueInsert(tab: TableName, obj: Record<string, unknown>) {
   return new Promise<void>((resolve, reject) => {
-    queue.push({ kind: "insert", tab, obj, resolve, reject });
+    Q.ops.push({ kind: "insert", tab, obj, resolve, reject });
     schedule();
   });
 }
 
 function enqueueUpdate(tab: TableName, id: string, patch: Record<string, unknown>) {
   return new Promise<Record<string, unknown> | null>((resolve, reject) => {
-    queue.push({ kind: "update", tab, id, patch, resolve, reject });
+    Q.ops.push({ kind: "update", tab, id, patch, resolve, reject });
     schedule();
   });
 }
@@ -254,8 +255,8 @@ export async function restoreRows<T extends TableName>(table: T, rows: Record<st
 
 /** Test helper: wait for queued writes. */
 export async function flushWrites() {
-  if (timer) {
-    clearTimeout(timer);
+  if (Q.timer) {
+    clearTimeout(Q.timer);
     await flush();
   }
   await withLock("__writes__", async () => undefined);

@@ -1,5 +1,6 @@
 import "./env";
-import { getAll, bulkInsert, flushWrites } from "../lib/sheets/repository";
+import { getAll, bulkInsert, flushWrites, update } from "../lib/sheets/repository";
+import { addDays, todayISO } from "../lib/dates";
 import { initSheets } from "../lib/sheets/init";
 
 /**
@@ -51,7 +52,93 @@ async function main() {
     { key: "alert_no_import_days", value: "2" },
   ]);
 
+  await seedCompaniesAndCampaigns();
   console.log("Done.");
+}
+
+/* ---------- Companies, ad accounts, campaigns, ad sets ---------- */
+async function seedCompaniesAndCampaigns() {
+  if ((await getAll("Companies", { includeDeleted: true })).length) {
+    console.log("  = Companies: already seeded, skipped companies/campaigns");
+    return;
+  }
+  const platforms = await getAll("Platforms");
+  const pid = (name: string) => platforms.find((p) => p.name === name)!.id;
+
+  const companies = await bulkInsert(
+    "Companies",
+    [
+      { name_ar: "قسورة للعقارات", name_en: "Qaswarah Real Estate", industry: "عقارات", currency: "SAR", monthly_budget: 60000, status: "active", account_manager: "سارة المدير" },
+      { name_ar: "مطاعم الواحة", name_en: "Al Waha Restaurants", industry: "مطاعم", currency: "SAR", monthly_budget: 35000, status: "active", account_manager: "سارة المدير" },
+      { name_ar: "عيادات النخبة", name_en: "Elite Clinics", industry: "رعاية صحية", currency: "SAR", monthly_budget: 45000, status: "active", account_manager: "خالد" },
+    ],
+    ACTOR,
+  );
+  console.log(`  + Companies: ${companies.length} rows`);
+
+  // Give the demo media buyer and viewer access to the first two companies / the first company.
+  const users = await getAll("Users");
+  const buyer = users.find((u) => u.email === "buyer@qaswarah.test");
+  const viewer = users.find((u) => u.email === "viewer@qaswarah.test");
+  if (buyer) await update("Users", buyer.id, { company_ids: [companies[0].id, companies[1].id] }, ACTOR);
+  if (viewer) await update("Users", viewer.id, { company_ids: [companies[0].id] }, ACTOR);
+
+  const active = ["Meta", "TikTok", "Snapchat", "Google Ads"];
+  const accounts = await bulkInsert(
+    "AdAccounts",
+    companies.flatMap((c, i) =>
+      active.map((p, j) => ({ company_id: c.id, platform_id: pid(p), account_name: `${c.name_en} - ${p}`, external_account_id: `act_${100200300 + i * 10 + j}` })),
+    ),
+    ACTOR,
+  );
+  console.log(`  + AdAccounts: ${accounts.length} rows`);
+  const acc = (companyId: string, platform: string) => accounts.find((a) => a.company_id === companyId && a.platform_id === pid(platform))?.id ?? "";
+
+  const today = todayISO();
+  const plan: [number, string, string, "Leads" | "Sales" | "Awareness" | "Messages" | "Traffic", number, "active" | "paused" | "ended"][] = [
+    [0, "Meta", "مشروع الياسمين - عملاء محتملون", "Leads", 900, "active"],
+    [0, "Meta", "فلل الربيع - رسائل واتساب", "Messages", 600, "active"],
+    [0, "Google Ads", "بحث - شقق للبيع الرياض", "Leads", 500, "active"],
+    [0, "TikTok", "جولة افتراضية - وعي", "Awareness", 300, "paused"],
+    [1, "Meta", "قائمة الشتاء - طلبات", "Sales", 450, "active"],
+    [1, "Snapchat", "عرض نهاية الأسبوع", "Traffic", 350, "active"],
+    [1, "TikTok", "تحدي الطبق الجديد", "Awareness", 400, "active"],
+    [1, "Google Ads", "بحث - مطعم قريب مني", "Traffic", 250, "ended"],
+    [2, "Meta", "تبييض الأسنان - حجوزات", "Leads", 700, "active"],
+    [2, "Meta", "استشارة جلدية مجانية", "Messages", 500, "active"],
+    [2, "Snapchat", "عروض الليزر", "Leads", 400, "paused"],
+    [2, "Google Ads", "بحث - عيادة أسنان", "Leads", 600, "active"],
+  ];
+  const buyers = ["buyer@qaswarah.test", "manager@qaswarah.test"];
+  const campaigns = await bulkInsert(
+    "Campaigns",
+    plan.map(([ci, p, name, objective, budget, status], k) => ({
+      company_id: companies[ci].id,
+      platform_id: pid(p),
+      ad_account_id: acc(companies[ci].id, p),
+      name,
+      objective,
+      start_date: addDays(today, -75 + k),
+      end_date: status === "ended" ? addDays(today, -10) : "",
+      budget_type: "daily" as const,
+      budget,
+      status,
+      media_buyer: buyers[ci === 2 ? 1 : 0],
+      external_campaign_id: `2385${1000000 + k}`,
+    })),
+    ACTOR,
+  );
+  console.log(`  + Campaigns: ${campaigns.length} rows`);
+
+  const adsets = await bulkInsert(
+    "AdSets",
+    campaigns.flatMap((c) => [
+      { campaign_id: c.id, company_id: c.company_id, name: "اهتمامات - 25-45", audience: "الرياض، 25-45، اهتمامات ذات صلة", placements: "Advantage+", budget: Math.round(c.budget * 0.6), status: "active" as const },
+      { campaign_id: c.id, company_id: c.company_id, name: "إعادة استهداف", audience: "زوار الموقع آخر 30 يومًا", placements: "Feeds, Stories", budget: Math.round(c.budget * 0.4), status: "active" as const },
+    ]),
+    ACTOR,
+  );
+  console.log(`  + AdSets: ${adsets.length} rows`);
 }
 
 main().catch((e) => {

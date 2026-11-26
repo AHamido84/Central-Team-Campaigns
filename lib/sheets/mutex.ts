@@ -1,4 +1,5 @@
-const chains = new Map<string, Promise<unknown>>();
+const g = globalThis as unknown as { __adsHubLocks?: Map<string, Promise<unknown>> };
+const chains = (g.__adsHubLocks ??= new Map<string, Promise<unknown>>());
 
 /** Serializes read-modify-write work per tab inside this server process. */
 export function withLock<T>(key: string, fn: () => Promise<T>): Promise<T> {

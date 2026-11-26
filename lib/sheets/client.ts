@@ -1,7 +1,7 @@
 import type { SheetBackend } from "./backend";
 import { MemorySheetBackend } from "./memory-backend";
 
-let instance: SheetBackend | null = null;
+const g = globalThis as unknown as { __adsHubBackend?: SheetBackend | null };
 
 export class SheetsConfigError extends Error {}
 
@@ -11,7 +11,7 @@ export function dataBackendKind(): "google" | "memory" {
 
 /** Returns the configured backend. Server only (never import from a client component). */
 export async function getBackend(): Promise<SheetBackend> {
-  if (instance) return instance;
+  if (g.__adsHubBackend) return g.__adsHubBackend;
   if (dataBackendKind() === "google") {
     const { GOOGLE_SERVICE_ACCOUNT_EMAIL: email, GOOGLE_PRIVATE_KEY: key, SPREADSHEET_ID: id } = process.env;
     if (!email || !key || !id) {
@@ -20,14 +20,14 @@ export async function getBackend(): Promise<SheetBackend> {
       );
     }
     const { GoogleSheetBackend } = await import("./google-backend");
-    instance = new GoogleSheetBackend(id, email, key);
+    g.__adsHubBackend = new GoogleSheetBackend(id, email, key);
   } else {
-    instance = new MemorySheetBackend(process.env.MEMORY_DB_FILE || undefined);
+    g.__adsHubBackend = new MemorySheetBackend(process.env.MEMORY_DB_FILE || undefined);
   }
-  return instance;
+  return g.__adsHubBackend;
 }
 
 /** For tests and scripts. */
 export function setBackend(b: SheetBackend | null) {
-  instance = b;
+  g.__adsHubBackend = b;
 }
