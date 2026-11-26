@@ -11,6 +11,17 @@ export function useErrorText() {
   const t = useTranslations();
   return (key: string | undefined) => {
     if (!key) return undefined;
+    // Errors with a detail: "missingFields:date,spend" or "rollbackBlocked:file.csv"
+    const sep = key.indexOf(":");
+    if (sep > 0 && t.has(`errors.${key.slice(0, sep)}`)) {
+      const k = key.slice(0, sep);
+      const arg = key.slice(sep + 1);
+      const fields = arg
+        .split(",")
+        .map((f) => (t.has(`import.fields.${f}`) ? t(`import.fields.${f}`) : f))
+        .join("، ");
+      return t(`errors.${k}`, { fields, files: arg });
+    }
     if (t.has(`validation.${key}`)) return t(`validation.${key}`);
     if (t.has(`errors.${key}`)) return t(`errors.${key}`);
     return key;

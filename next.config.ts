@@ -6,6 +6,8 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 const nextConfig: NextConfig = {
   // googleapis must stay on the server and is never bundled for the browser.
   serverExternalPackages: ["@googleapis/sheets", "google-auth-library"],
+  // Import files are parsed in the browser and the mapped rows are sent to a Server Action.
+  experimental: { serverActions: { bodySizeLimit: "8mb" } },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "drive.google.com" },
