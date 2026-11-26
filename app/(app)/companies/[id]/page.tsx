@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { FileBarChart, Pencil, Wallet } from "lucide-react";
+import { FileBarChart, Pencil } from "lucide-react";
+import { BudgetsSection } from "@/components/budgets/budgets-section";
 import { ScheduleSection } from "@/components/schedule/schedule-section";
 import { ScheduleWidgets } from "@/components/schedule/schedule-widgets";
 import { scheduleWidgets } from "@/lib/data/schedule";
@@ -9,13 +10,13 @@ import { AdAccountsPanel } from "@/components/companies/ad-accounts-panel";
 import { ArchiveCompanyButton } from "@/components/companies/archive-button";
 import { CompanyFormDialog } from "@/components/companies/company-form-dialog";
 import { CompanyLogo } from "@/components/companies/company-logo";
-import { COMPANY_TABS, CompanyTabs, type CompanyTab } from "@/components/companies/company-tabs";
+import { COMPANY_TABS, CompanyTabs, TAB_PERMISSION, type CompanyTab } from "@/components/companies/company-tabs";
 import { CampaignsTable } from "@/components/campaigns/campaigns-table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { can } from "@/lib/auth/permissions";
+import { can, hasPermission } from "@/lib/auth/permissions";
 import { requirePage } from "@/lib/auth/session";
 import { campaignFormOptions } from "@/lib/data/campaign-options";
 import { listAdAccounts, listCampaignRows } from "@/lib/data/campaigns";
@@ -33,7 +34,8 @@ export default async function CompanyPage({ params, searchParams }: { params: Pr
   const user = await requirePage("company:view", id);
   const company = await getCompanyForUser(user, id);
   if (!company) notFound();
-  const tab: CompanyTab = (COMPANY_TABS as readonly string[]).includes(rawTab ?? "") ? (rawTab as CompanyTab) : "overview";
+  const tabs = COMPANY_TABS.filter((x) => hasPermission(user, TAB_PERMISSION[x]));
+  const tab: CompanyTab = (tabs as readonly string[]).includes(rawTab) ? (rawTab as CompanyTab) : tabs[0];
   const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
   const name = locale === "en" && company.name_en ? company.name_en : company.name_ar;
   const canManage = can(user, "company:manage", id);
@@ -68,8 +70,10 @@ export default async function CompanyPage({ params, searchParams }: { params: Pr
     body = <CreativesSection user={user} sp={sp} fixedCompanyId={id} />;
   } else if (tab === "schedule") {
     body = <ScheduleSection user={user} sp={sp} fixedCompanyId={id} />;
+  } else if (tab === "budgets") {
+    body = <BudgetsSection user={user} sp={sp} fixedCompanyId={id} />;
   } else {
-    const soon = { budgets: [Wallet, 7], reports: [FileBarChart, 8] } as const;
+    const soon = { reports: [FileBarChart, 8] } as const;
     const [Icon, phase] = soon[tab];
     body = <EmptyState icon={Icon} title={t("soon.title", { section: t(`companies.tabs.${tab}`) })} body={t("soon.body", { phase: t("common.phase", { n: phase }) })} />;
   }
@@ -94,7 +98,7 @@ export default async function CompanyPage({ params, searchParams }: { params: Pr
           </div>
         )}
       </div>
-      <CompanyTabs companyId={id} active={tab} />
+      <CompanyTabs companyId={id} active={tab} tabs={tabs} />
       <div className="mt-6">{body}</div>
     </>
   );

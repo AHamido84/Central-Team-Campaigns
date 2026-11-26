@@ -117,3 +117,13 @@ export const ScheduleInput = z.object({
   status: z.enum(SCHEDULE_STATUS).default("scheduled"),
   notes: opt,
 });
+
+/* ---------- Monthly budget plan and targets ---------- */
+export const MonthPlanInput = z.object({
+  month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, "month"),
+  budgets: z.record(z.string(), money).default({}),
+  target_leads: money,
+  target_cpl: money,
+  target_roas: money,
+  target_spend: money,
+});

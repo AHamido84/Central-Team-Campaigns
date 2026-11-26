@@ -131,7 +131,8 @@
     "duplicate": "This name already exists",
     "adAccountMismatch": "This ad account doesn't belong to this company or platform",
     "campaignMismatch": "Campaign doesn't belong to this company or platform",
-    "time": "Use 24-hour time, like 18:30"
+    "time": "Use 24-hour time, like 18:30",
+    "month": "Pick a month"
   },
   "errors": {
     "forbidden": "You don't have permission for this",
@@ -748,5 +749,36 @@
     "creativePosts": "Publishing schedule",
     "scheduleThis": "Schedule",
     "noPosts": "This creative isn't scheduled yet."
+  },
+  "budgets": {
+    "intro": "Monthly budget per company and platform, targets, and spend pacing to month end.",
+    "month": "Month",
+    "copyPrev": "Copy last month's plan",
+    "copied": "Copied last month's plan for {n} companies",
+    "dataUntil": "Data until",
+    "planned": "Planned",
+    "remaining": "Remaining",
+    "of": "of",
+    "used": "Used",
+    "projectedShort": "Projected",
+    "status": "Status",
+    "unplanned": "Not planned",
+    "edit": "Edit plan",
+    "editPlan": "{company} plan",
+    "budgetByPlatform": "Budget by platform",
+    "total": "Total",
+    "targets": "Targets (whole company)",
+    "f": {
+      "target_leads": "Target leads",
+      "target_cpl": "Target CPL",
+      "target_roas": "Target ROAS",
+      "target_spend": "Spend cap"
+    },
+    "onTarget": "On target",
+    "offTarget": "Off target",
+    "noTarget": "No targets for this month.",
+    "cumulative": "Cumulative spend",
+    "planLine": "Plan (even pace)",
+    "empty": "No companies to show"
   }
 }

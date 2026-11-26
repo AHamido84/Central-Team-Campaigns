@@ -225,7 +225,7 @@ async function seedBudgetsAndTargets() {
   // Company-wide targets (platform empty). The clinics CPL target is tight on purpose so the CPL alert shows.
   const cpl = [60, 45, 25];
   const targets = companies.flatMap((c, i) =>
-    months.map((month) => ({ company_id: c.id, platform_id: "", month, target_leads: Math.round(c.monthly_budget / cpl[i % 3]), target_cpl: cpl[i % 3], target_roas: i === 1 ? 4 : 0, target_spend: c.monthly_budget })),
+    months.map((month) => ({ company_id: c.id, platform_id: "", month, target_leads: i === 1 ? 0 : Math.round(c.monthly_budget / cpl[i % 3]), target_cpl: cpl[i % 3], target_roas: i === 1 ? 4 : 0, target_spend: c.monthly_budget })),
   );
   await bulkInsert("Targets", targets, ACTOR);
   await flushWrites();
