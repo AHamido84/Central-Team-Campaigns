@@ -28,7 +28,6 @@
     "dark": "Dark",
     "system": "System",
     "comingSoon": "Coming soon",
-    "phase": "Phase {n}",
     "back": "Back",
     "home": "Home",
     "save": "Save",
@@ -115,10 +114,6 @@
     "noResults": "No results",
     "unassigned": "Unassigned"
   },
-  "soon": {
-    "title": "{section} is being built",
-    "body": "This page will be ready in {phase}."
-  },
   "validation": {
     "required": "This field is required",
     "tooLong": "Too long",
@@ -128,11 +123,14 @@
     "url": "Invalid link, must start with https://",
     "currency": "3-letter currency code like SAR",
     "endBeforeStart": "End date is before start date",
-    "duplicate": "This name already exists",
+    "duplicate": "Already exists",
     "adAccountMismatch": "This ad account doesn't belong to this company or platform",
     "campaignMismatch": "Campaign doesn't belong to this company or platform",
     "time": "Use 24-hour time, like 18:30",
-    "month": "Pick a month"
+    "month": "Pick a month",
+    "email": "Enter a valid email",
+    "tooBig": "Value is too large",
+    "tooSmall": "Value is too small"
   },
   "errors": {
     "forbidden": "You don't have permission for this",
@@ -155,7 +153,10 @@
     "notApproved": "A creative must be approved before it can go live or be paused.",
     "unauthorized": "Please sign in first",
     "chromeNotFound": "The PDF browser could not start on the server. Check the Chromium setup.",
-    "pdfFailed": "The PDF could not be created. Please try again."
+    "pdfFailed": "The PDF could not be created. Please try again.",
+    "selfDemote": "You can't remove your own Admin role.",
+    "selfDelete": "You can't remove your own account.",
+    "lastAdmin": "At least one Admin must remain."
   },
   "status": {
     "active": "Active",
@@ -301,11 +302,94 @@
     "inactive": "Inactive"
   },
   "settings": {
-    "subtitle": "System administration",
+    "subtitle": "Manage users, alerts, currency, platforms and import templates",
     "platforms": "Platforms",
     "platformsBody": "Add and enable platforms",
-    "more": "Users, alerts, currency and import templates",
-    "moreBody": "Coming in Phase 9"
+    "backend": "Current data source:",
+    "backendMemory": "Local test file (not Google Sheets)",
+    "cards": {
+      "users": {
+        "title": "Users and roles",
+        "body": "Who can sign in, their role, and which companies they see"
+      },
+      "general": {
+        "title": "Currency and alerts",
+        "body": "Default currency and smart alert thresholds"
+      },
+      "platforms": {
+        "title": "Platforms",
+        "body": "Add and enable platforms"
+      },
+      "mappings": {
+        "title": "Column mapping templates",
+        "body": "Columns saved from earlier Meta imports"
+      }
+    },
+    "users": {
+      "title": "Users and roles",
+      "subtitle": "The allow list: only emails added here can sign in with Google.",
+      "body": "Add a teammate by their Google email, then pick their role and companies.",
+      "add": "Add user",
+      "edit": "Edit user",
+      "email": "Google email",
+      "emailHint": "The same email they use to sign in to Google",
+      "name": "Name",
+      "role": "Role",
+      "companies": "Companies",
+      "allCompanies": "All companies",
+      "noCompanies": "No companies yet",
+      "you": "you",
+      "remove": "Remove user",
+      "removeConfirm": "{name} will lose access right away. Their records and work stay as they are.",
+      "removed": "User removed",
+      "envAdmins": "These emails are always Admin through ADMIN_EMAILS on the server:",
+      "roleHelp": {
+        "Admin": "Everything, including settings and users.",
+        "Manager": "All companies: campaigns, creatives, approvals, budgets, reports and sharing. No settings.",
+        "MediaBuyer": "Selected companies only: campaigns, imports, schedule, and only their own report.",
+        "Designer": "Selected companies only: creatives, versions and schedule. No spend or reports.",
+        "Viewer": "Read only for selected companies: dashboard, campaigns and reports."
+      }
+    },
+    "general": {
+      "title": "Currency and alerts",
+      "subtitle": "Applied to the dashboard, campaign pages and reports.",
+      "currencyTitle": "Default currency",
+      "currencyBody": "Used when several companies are shown together. Each company keeps its own currency on its page.",
+      "default_currency": "Currency code (3 letters)",
+      "alertsTitle": "Smart alert thresholds",
+      "alertsBody": "When an alert shows on the dashboard and in reports.",
+      "alert_frequency_max": "Highest acceptable frequency",
+      "alert_ctr_min": "Lowest link CTR",
+      "alert_cpl_over_target_pct": "CPL above target by",
+      "alert_zero_results_days": "Days of spend with no results",
+      "alert_no_import_days": "Days without a data import",
+      "hint": {
+        "alert_frequency_max": "Above this the audience is saturated",
+        "alert_ctr_min": "Example: 0.8 means 0.8%",
+        "alert_cpl_over_target_pct": "Example: 20 means 20% above",
+        "alert_zero_results_days": "A campaign spending this long with no result",
+        "alert_no_import_days": "Alert when a company's data is late"
+      },
+      "unit": {
+        "x": "x",
+        "%": "%",
+        "days": "days"
+      }
+    },
+    "mappings": {
+      "title": "Column mapping templates",
+      "subtitle": "When importing you can save the column mapping. Review, fix or delete it here.",
+      "column": "File column",
+      "target": "Field in the system",
+      "count": "{n} saved columns",
+      "deleted": "Mapping deleted",
+      "reset": "Reset",
+      "resetConfirm": "All saved mapping for {platform} will be deleted, and the next import goes back to recognising Meta columns automatically.",
+      "resetDone": "Reset done",
+      "emptyTitle": "No saved mapping yet",
+      "emptyBody": "When you import a file, tick \"Save this mapping\" and it shows up here."
+    }
   },
   "import": {
     "subtitle": "Upload a Meta Ads Manager report and we'll turn it into clean daily results in the sheet",
@@ -584,7 +668,10 @@
       "Budget": "the budget",
       "Target": "the target",
       "CreativeVersion": "a new version of the creative",
-      "ShareLink": "share link"
+      "ShareLink": "share link",
+      "User": "user",
+      "Settings": "settings",
+      "ColumnMapping": "column mapping"
     }
   },
   "creatives": {

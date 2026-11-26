@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ASPECT_RATIOS, BUDGET_TYPES, CAMPAIGN_OBJECTIVES, CAMPAIGN_STATUS, COMPANY_STATUS, CREATIVE_STATUS, CREATIVE_TYPES, SCHEDULE_STATUS } from "./entities";
+import { ROLES, ASPECT_RATIOS, BUDGET_TYPES, CAMPAIGN_OBJECTIVES, CAMPAIGN_STATUS, COMPANY_STATUS, CREATIVE_STATUS, CREATIVE_TYPES, SCHEDULE_STATUS } from "./entities";
 
 /**
  * Form schemas, shared by the browser (react-hook-form) and the Server
@@ -126,4 +126,20 @@ export const MonthPlanInput = z.object({
   target_cpl: money,
   target_roas: money,
   target_spend: money,
+});
+
+/* ---------- Settings ---------- */
+export const UserInput = z.object({
+  email: z.string().trim().toLowerCase().email("email"),
+  name: req(2),
+  role: z.enum(ROLES),
+  company_ids: z.array(z.string()).default(["*"]),
+});
+export const SettingsInput = z.object({
+  default_currency: z.string().trim().toUpperCase().regex(/^[A-Z]{3}$/, "currency"),
+  alert_frequency_max: z.coerce.number({ error: "number" }).min(1, "tooSmall").max(20, "tooBig"),
+  alert_ctr_min: z.coerce.number({ error: "number" }).min(0, "positive").max(20, "tooBig"), // percent in the form
+  alert_cpl_over_target_pct: z.coerce.number({ error: "number" }).min(0, "positive").max(500, "tooBig"), // percent in the form
+  alert_zero_results_days: z.coerce.number({ error: "number" }).int("number").min(1, "tooSmall").max(30, "tooBig"),
+  alert_no_import_days: z.coerce.number({ error: "number" }).int("number").min(1, "tooSmall").max(30, "tooBig"),
 });
