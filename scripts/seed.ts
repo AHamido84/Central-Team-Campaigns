@@ -55,6 +55,7 @@ async function main() {
 
   await seedCompaniesAndCampaigns();
   await seedResults();
+  await seedBudgetsAndTargets();
   console.log("Done.");
 }
 
@@ -201,6 +202,32 @@ async function seedResults() {
   }
   const res = await upsertMany("DailyResults", "row_key", rows, ACTOR);
   console.log(`  + DailyResults: ${res.inserted.length} rows (60 days)`);
+}
+
+/* ---------- Budgets and targets (this month and last month) ---------- */
+async function seedBudgetsAndTargets() {
+  if ((await getAll("Budgets", { includeDeleted: true })).length) {
+    console.log("  = Budgets: already has rows, skipped");
+    return;
+  }
+  const [companies, platforms] = await Promise.all([getAll("Companies"), getAll("Platforms")]);
+  const share: Record<string, number> = { Meta: 0.5, "Google Ads": 0.2, TikTok: 0.15, Snapchat: 0.15 };
+  const today = todayISO();
+  const months = [today.slice(0, 7), addDays(today.slice(0, 7) + "-01", -1).slice(0, 7)];
+  const budgets = companies.flatMap((c) =>
+    months.flatMap((month) =>
+      platforms.filter((p) => share[p.name]).map((p) => ({ company_id: c.id, platform_id: p.id, month, planned_budget: Math.round(c.monthly_budget * share[p.name]) })),
+    ),
+  );
+  await bulkInsert("Budgets", budgets, ACTOR);
+  // Company-wide targets (platform empty). The clinics CPL target is tight on purpose so the CPL alert shows.
+  const cpl = [60, 45, 25];
+  const targets = companies.flatMap((c, i) =>
+    months.map((month) => ({ company_id: c.id, platform_id: "", month, target_leads: Math.round(c.monthly_budget / cpl[i % 3]), target_cpl: cpl[i % 3], target_roas: i === 1 ? 4 : 0, target_spend: c.monthly_budget })),
+  );
+  await bulkInsert("Targets", targets, ACTOR);
+  await flushWrites();
+  console.log(`  + Budgets: ${budgets.length} rows, Targets: ${targets.length} rows`);
 }
 
 main().catch((e) => {

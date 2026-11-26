@@ -15,14 +15,28 @@ import { requirePage } from "@/lib/auth/session";
 import { campaignFormOptions } from "@/lib/data/campaign-options";
 import { listAdSets, listCampaignRows } from "@/lib/data/campaigns";
 import { formatCurrency } from "@/lib/format";
+import { getById } from "@/lib/sheets";
+import { parseFilters, type SearchParams } from "@/lib/filters";
+import { campaignAnalytics } from "@/lib/data/campaign-analytics";
+import { FilterBar } from "@/components/dashboard/filter-bar";
+import { KpiGrid } from "@/components/dashboard/kpi-grid";
+import { DailyCharts } from "@/components/dashboard/charts";
+import { NoData, Panel } from "@/components/dashboard/panels";
+import { BreakdownTable } from "@/components/dashboard/breakdown-table";
+import { CampaignPacing } from "@/components/dashboard/campaign-pacing";
+import { ActivityList } from "@/components/dashboard/activity-list";
 
-export default async function CampaignPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function CampaignPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<SearchParams> }) {
   const { id } = await params;
+  const filters = parseFilters(await searchParams);
   const user = await requirePage("campaign:view");
   const locale = await getLocale();
   const row = (await listCampaignRows(user)).find((c) => c.id === id);
   if (!row) notFound();
-  const [t, adSets, options] = await Promise.all([getTranslations(), listAdSets(id), campaignFormOptions(user, locale)]);
+  const [t, adSets, options, campaign] = await Promise.all([getTranslations(), listAdSets(id), campaignFormOptions(user, locale), getById("Campaigns", id)]);
+  if (!campaign) notFound();
+  const a = await campaignAnalytics(campaign, row.platform_name, filters);
+  const cur = row.company_currency;
   const canManage = can(user, "campaign:manage", row.company_id);
   const account = options.adAccounts.find((a) => a.id === row.ad_account_id);
 
@@ -72,7 +86,29 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           </CardContent>
         </Card>
         <AdSetsPanel campaignId={row.id} adSets={adSets} currency={row.company_currency} canManage={canManage} />
-        <EmptyState icon={LineChart} title={t("campaigns.pageSoon")} className="py-10" />
+        <FilterBar filters={filters} options={{ companies: [], platforms: [], buyers: [] }} hideCompany minimal />
+        {a.hasData ? (
+          <KpiGrid kpis={a.kpis} currency={cur} prevLabel={t("kpi.vsPrev", { from: a.range.prevFrom, to: a.range.prevTo })} labels={a.labels} />
+        ) : (
+          <EmptyState icon={LineChart} title={t("dashboard.emptyTitle")} body={t("campaigns.noResultsInRange")} className="py-10" />
+        )}
+        <div className="grid gap-4 xl:grid-cols-3">
+          <Panel title={t("dashboard.dailyTitle")} description={t("dashboard.dailyHint")} className="xl:col-span-2">
+            {a.hasData ? <DailyCharts data={a.daily} currency={cur} /> : <NoData text={t("dashboard.noData")} />}
+          </Panel>
+          <Panel title={t("pacing.title")} description={a.pacing ? t(`pacing.campaign.${a.pacing.type}`) : undefined}>
+            {a.pacing ? <CampaignPacing p={a.pacing} currency={cur} /> : <NoData text={t("pacing.noBudget")} />}
+          </Panel>
+        </div>
+        <Panel title={t("campaigns.byAdSet")}>
+          <BreakdownTable rows={a.byAdSet} metrics={a.breakdownMetrics} currency={cur} nameLabel={t("campaigns.adSet")} labels={a.labels} />
+        </Panel>
+        <Panel title={t("campaigns.byAd")} description={t("campaigns.byAdHint")}>
+          <BreakdownTable rows={a.byAd} metrics={a.breakdownMetrics} currency={cur} nameLabel={t("dashboard.ad")} labels={a.labels} />
+        </Panel>
+        <Panel title={t("campaigns.activity")}>
+          <ActivityList items={a.activity} />
+        </Panel>
       </div>
     </>
   );

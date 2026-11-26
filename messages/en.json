@@ -56,7 +56,9 @@
     "details": "Details",
     "from": "From",
     "to": "To",
-    "rows": "{n} rows"
+    "rows": "{n} rows",
+    "other": "Other",
+    "loading": "Loading"
   },
   "roles": {
     "Admin": "Admin",
@@ -83,7 +85,7 @@
   },
   "dashboard": {
     "welcome": "Welcome, {name}",
-    "intro": "This is the starter dashboard. KPIs, charts and alerts arrive in Phase 4.",
+    "intro": "Campaign performance across all companies at a glance.",
     "status": "System status",
     "backend": "Data source",
     "backendGoogle": "Google Sheets",
@@ -93,7 +95,25 @@
     "role": "Your role",
     "companies": "Allowed companies",
     "allCompanies": "All companies",
-    "error": "Could not reach the data source"
+    "error": "Could not reach the data source",
+    "period": "Period:",
+    "comparedTo": "compared to",
+    "emptyTitle": "No results in this period",
+    "emptyBody": "Import a results file from Meta, or change the period and filters.",
+    "noData": "No data in this period.",
+    "dailyTitle": "Daily spend and results",
+    "dailyHint": "Two charts on one time axis. Hover to see the same day in both.",
+    "byPlatform": "Spend by platform",
+    "byCompany": "Spend by company",
+    "topCampaigns": "Top 5 campaigns",
+    "bottomCampaigns": "Bottom 5 campaigns",
+    "rankHint": "Lowest cost per result, among lead, sales and message campaigns",
+    "bottomHint": "Highest cost per result; campaigns spending with no results come first",
+    "topAds": "Top 5 ads",
+    "topAdsHint": "Lead, sales and message campaigns, by cost per result",
+    "ad": "Ad",
+    "noResults": "No results",
+    "unassigned": "Unassigned"
   },
   "soon": {
     "title": "{section} is being built",
@@ -177,8 +197,7 @@
       "budgets": "Budgets & targets",
       "accounts": "Ad accounts",
       "reports": "Reports"
-    },
-    "overviewSoon": "The full performance dashboard for this company arrives in Phase 4."
+    }
   },
   "accounts": {
     "title": "Ad accounts",
@@ -254,8 +273,13 @@
       "status": "Status",
       "external_adset_id": "Platform ad set ID"
     },
-    "pageSoon": "Totals, daily trend and creative performance for this campaign arrive in Phase 4.",
-    "count": "{n} campaigns"
+    "count": "{n} campaigns",
+    "byAdSet": "Performance by ad set",
+    "byAd": "Performance by ad and creative",
+    "byAdHint": "Each ad will link to its creative in Phase 5",
+    "activity": "Activity log",
+    "noResultsInRange": "This campaign has no results in the selected period.",
+    "adSet": "Ad set"
   },
   "platforms": {
     "title": "Platforms",
@@ -417,6 +441,140 @@
       "video_3s_views": "3-second plays",
       "thruplay": "ThruPlay",
       "engagement": "Engagement"
+    }
+  },
+  "metrics": {
+    "spend": "Spend",
+    "impressions": "Impressions",
+    "reach": "Reach",
+    "clicks": "Clicks",
+    "link_clicks": "Link clicks",
+    "ctr": "CTR",
+    "link_ctr": "Link CTR",
+    "cpc": "CPC",
+    "cost_per_link_click": "Cost per link click",
+    "cpm": "CPM",
+    "frequency": "Frequency",
+    "results": "Results",
+    "cost_per_result": "Cost per result",
+    "leads": "Leads",
+    "cpl": "CPL",
+    "messages": "Messages",
+    "cost_per_message": "Cost per message",
+    "purchases": "Purchases",
+    "purchase_value": "Purchase value",
+    "cost_per_purchase": "Cost per purchase",
+    "roas": "ROAS",
+    "video_views": "Video views",
+    "video_3s_views": "3s video views",
+    "video_2s_6s": "2s/6s views",
+    "thruplay": "ThruPlay",
+    "engagement": "Engagement",
+    "hook_rate": "Hook rate",
+    "hold_rate": "Hold rate",
+    "conversions": "Conversions",
+    "cpa": "CPA"
+  },
+  "filters": {
+    "range": "Period",
+    "from": "From",
+    "to": "To",
+    "company": "Company",
+    "platform": "Platform",
+    "buyer": "Media buyer",
+    "status": "Status",
+    "allCompanies": "All companies",
+    "allPlatforms": "All platforms",
+    "allBuyers": "All media buyers",
+    "allStatuses": "All statuses",
+    "compare": "Compare to previous period",
+    "reset": "Reset",
+    "preset": {
+      "today": "Today",
+      "last_7": "Last 7 days",
+      "last_30": "Last 30 days",
+      "this_month": "This month",
+      "custom": "Custom range"
+    }
+  },
+  "kpi": {
+    "vsPrev": "vs {from} to {to}",
+    "noCompare": "No previous data",
+    "better": "better",
+    "worse": "worse"
+  },
+  "alerts": {
+    "title": "Smart alerts",
+    "hint": "Based on the most recent days, whatever period is selected",
+    "none": "No alerts. Everything is within limits.",
+    "more": "and {n} more",
+    "severity": {
+      "critical": "Critical",
+      "warning": "Warning"
+    },
+    "type": {
+      "overBudget": "Over budget",
+      "cplAboveTarget": "CPL above target",
+      "highFrequency": "High frequency",
+      "lowCtr": "Low CTR",
+      "zeroResults": "Spend with no results",
+      "noImport": "No recent import"
+    },
+    "detail": {
+      "overBudget": "Spent {value} of {threshold}",
+      "cplAboveTarget": "CPL {value}, target {threshold}",
+      "highFrequency": "Frequency {value} over 7 days (limit {threshold})",
+      "lowCtr": "CTR {value} over 7 days (minimum {threshold})",
+      "zeroResults": "Spent {value} in the last {threshold} days with no results",
+      "noImport": "Last data {value} days ago (limit {threshold})"
+    }
+  },
+  "pacing": {
+    "title": "Budget pacing",
+    "hint": "Month-to-date spend vs budget. The tick marks today's position in the month.",
+    "over": "Over budget",
+    "fast": "Spending faster than planned",
+    "slow": "Spending slower than planned",
+    "ok": "On track",
+    "none": "No budget",
+    "todayMark": "Today in the month",
+    "projected": "Projected at period end",
+    "spent": "Spent",
+    "budget": "Budget",
+    "expected": "Expected so far",
+    "avgDaily": "Average daily spend",
+    "dailyBudget": "Daily budget",
+    "daysRun": "Days running",
+    "noBudget": "This campaign has no budget or start date.",
+    "campaign": {
+      "daily": "Daily budget × days running vs spend",
+      "lifetime": "Spend vs the campaign's lifetime budget"
+    }
+  },
+  "activity": {
+    "none": "No activity recorded yet.",
+    "action": {
+      "create": "created",
+      "update": "updated",
+      "delete": "deleted",
+      "archive": "archived",
+      "restore": "restored",
+      "import": "imported",
+      "rollback": "rolled back",
+      "approve": "approved",
+      "reject": "rejected"
+    },
+    "entity": {
+      "Campaign": "the campaign",
+      "AdSet": "the ad set",
+      "Company": "the company",
+      "AdAccount": "the ad account",
+      "Platform": "the platform",
+      "ImportBatch": "the import batch",
+      "Creative": "the creative",
+      "Schedule": "the schedule",
+      "Budget": "the budget",
+      "Target": "the target"
     }
   }
 }

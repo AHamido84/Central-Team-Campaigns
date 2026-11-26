@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { CalendarDays, FileBarChart, LayoutDashboard, Palette, Pencil, Wallet } from "lucide-react";
+import { CalendarDays, FileBarChart, Palette, Pencil, Wallet } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdAccountsPanel } from "@/components/companies/ad-accounts-panel";
 import { ArchiveCompanyButton } from "@/components/companies/archive-button";
@@ -8,20 +8,24 @@ import { CompanyLogo } from "@/components/companies/company-logo";
 import { COMPANY_TABS, CompanyTabs, type CompanyTab } from "@/components/companies/company-tabs";
 import { CampaignsTable } from "@/components/campaigns/campaigns-table";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { can } from "@/lib/auth/permissions";
 import { requirePage } from "@/lib/auth/session";
 import { campaignFormOptions } from "@/lib/data/campaign-options";
 import { listAdAccounts, listCampaignRows } from "@/lib/data/campaigns";
-import { companyCards, getCompanyForUser } from "@/lib/data/companies";
+import { getCompanyForUser } from "@/lib/data/companies";
+import { dashboardData, filterOptions } from "@/lib/data/analytics";
+import { parseFilters, type SearchParams } from "@/lib/filters";
+import { DashboardView } from "@/components/dashboard/dashboard-view";
+import { FilterBar } from "@/components/dashboard/filter-bar";
 import { listPlatforms } from "@/lib/data/lookups";
-import { formatCurrency, formatNumber } from "@/lib/format";
 
-export default async function CompanyPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string }> }) {
+export default async function CompanyPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<SearchParams> }) {
   const { id } = await params;
-  const { tab: rawTab } = await searchParams;
+  const sp = await searchParams;
+  const rawTab = typeof sp.tab === "string" ? sp.tab : "";
   const user = await requirePage("company:view", id);
   const company = await getCompanyForUser(user, id);
   if (!company) notFound();
@@ -32,29 +36,10 @@ export default async function CompanyPage({ params, searchParams }: { params: Pr
 
   let body: React.ReactNode;
   if (tab === "overview") {
-    const card = (await companyCards(user, true)).find((c) => c.company.id === id);
+    const filters = { ...parseFilters(sp), company: id };
+    const [data, options] = await Promise.all([dashboardData(user, filters, locale), filterOptions(user, locale)]);
     body = (
       <div className="space-y-4">
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardDescription>{t("companies.mtdSpend")}</CardDescription>
-              <CardTitle className="num text-2xl">{formatCurrency(card?.mtdSpend ?? 0, company.currency, locale, 0)}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardDescription>{t("companies.f.monthly_budget")}</CardDescription>
-              <CardTitle className="num text-2xl">{formatCurrency(card?.budget ?? 0, company.currency, locale, 0)}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardDescription>{t("companies.activeCampaigns")}</CardDescription>
-              <CardTitle className="num text-2xl">{formatNumber(card?.activeCampaigns ?? 0, locale)}</CardTitle>
-            </CardHeader>
-          </Card>
-        </div>
         <Card>
           <CardContent className="grid gap-4 pt-5 text-sm sm:grid-cols-2 lg:grid-cols-4">
             {(["industry", "account_manager", "currency", "notes"] as const).map((k) => (
@@ -65,7 +50,8 @@ export default async function CompanyPage({ params, searchParams }: { params: Pr
             ))}
           </CardContent>
         </Card>
-        <EmptyState icon={LayoutDashboard} title={t("companies.overviewSoon")} className="py-10" />
+        <FilterBar filters={filters} options={options} hideCompany keep={["tab"]} />
+        <DashboardView data={data} single canImport={can(user, "results:import", id)} />
       </div>
     );
   } else if (tab === "campaigns") {
